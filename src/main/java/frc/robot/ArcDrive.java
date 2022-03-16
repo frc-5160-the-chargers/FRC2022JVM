@@ -5,7 +5,7 @@ package frc.robot;
  * A class representing a drive along an arc-shaped path.
  */
 public class ArcDrive {
-    boolean isValid;
+    public boolean isValid;
     public final double radius;
     public final double theta;
     public final double maxVelocity;
@@ -20,7 +20,7 @@ public class ArcDrive {
     /**
      * Creates a new ArcDrive object.
      * @param radius the radius of the arc to drive in
-     * @param theta the angular distance to drive for, in degrees
+     * @param thetaDeg the angular distance to drive for, in degrees
      * @param maxVelocity the maximum allowed velocity during the drive
      * @param wheelbase the distance between the centers of the front and back wheels of the robot
      */
