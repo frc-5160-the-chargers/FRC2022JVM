@@ -4,13 +4,20 @@ import edu.wpi.first.math.controller.PIDController;
 import frc.robot.utils.PIDConstants;
 import frc.robot.utils.Range;
 import frc.robot.utils.SmartDashboardUtils;
-import frc.robot.utils.Utils;
 
 import java.util.Objects;
 import java.util.function.*;
 
 import static frc.robot.utils.Utils.*;
 
+/**
+ * Wraps WPILib's {@link edu.wpi.first.math.controller.PIDController}, adding various improvements.
+ * <p>PID is a continuously-updating system that attempts to achieve a certain value ({@link #getTarget()}/{@link #setTarget(Double)}) by varying another ({@link #output})
+ * (for example, keeping a motor in a certain position, even when the motor is pushed, only by varying the speed of the motor).</p>
+ * <p>See <a href="https://www.ni.com/en-us/innovations/white-papers/06/pid-theory-explained.html">here</a> for an explanation of PID.</p>
+ * <p>This class also adds feedforward capability, an augmentation to PID that can increase its speed in reaching the target value</p>
+ * <p>See <a href="https://www.controleng.com/articles/feed-forwards-augment-pid-control/">here</a> for an explanation of feedforward.</p>
+ */
 public final class SuperPIDController {
     private final BiFunction<Double, Double, Double> feedForward; //TODO: Extract into functional interface
     private final PIDController pidController;
@@ -19,15 +26,18 @@ public final class SuperPIDController {
     private final DoubleConsumer output;
     private boolean active;
 
-    final String dashPidKey;
-    Range outputRange;
-    double tolerance;
+    /**
+     * The optional key to be passed to the {@link edu.wpi.first.wpilibj.smartdashboard.SmartDashboard} allowing access to the PID Constants from the SmartDashboard.
+     */
+    public final String dashPidKey;
+    public Range outputRange;
+    public double tolerance;
 
     /**
      * @deprecated
      * Passing raw nulls is prone to confusion.
      * Use {@link Builder#build()} instead.
-     * (See https://blogs.oracle.com/javamagazine/post/exploring-joshua-blochs-builder-design-pattern-in-java for an explanation.)
+     * (See <a href="https://blogs.oracle.com/javamagazine/post/exploring-joshua-blochs-builder-design-pattern-in-java">here</a> for an explanation.)
      */
     @Deprecated
     public SuperPIDController(
@@ -54,6 +64,8 @@ public final class SuperPIDController {
     }
 
     private SuperPIDController(final Builder builder) {
+        Objects.requireNonNull(builder);
+
         this.pidConstants = builder.pidConstants;
         this.input = builder.input;
         this.output = builder.output;
@@ -68,31 +80,42 @@ public final class SuperPIDController {
         active = false;
     }
 
+    /**
+     * The target is the value the PID controller is attempting to achieve.
+     * @return the target or 0 if no target set
+     */
     public double getTarget() {
         return active ? pidController.getSetpoint() : 0;
     }
 
+    /**
+     * The target is the value the PID controller is attempting to achieve.
+     */
+    public void setTarget(Double target) {
+        ensureActive();
+        pidController.setSetpoint(target);
+    }
+
+    /**
+     * The PID Constants control exactly how the PID Controller attempts to reach the target.
+     * @param pidConstants a {@link PIDConstants} objects holding the new set of constants.
+     */
     public void setConstants(final PIDConstants pidConstants) {
         this.pidConstants = pidConstants;
         PIDConstants.updateController(this.pidController, this.pidConstants);
     }
 
+    /**
+     * The error is a signed value representing how far the PID system currently is from the target value.
+     */
     public double getError() {
         return input.getAsDouble() - pidController.getSetpoint();
     }
 
-    public void maybeSetConstantsFromDash() {
-        if (isPidDashEnabled()) {
-            pidConstants = SmartDashboardUtils.getPID(dashPidKey);
-        } // TODO: Should it really do nothing if the pidKey is unset?
-    }
-
-    public void maybePutConstantsToDash() {
-        if (isPidDashEnabled()) {
-            SmartDashboardUtils.putPID(dashPidKey, pidConstants);
-        }
-    }
-
+    /**
+     * A PID Controller is "on target" if its current value is within {@link #tolerance} of the target value.
+     * @return if a target is set, whether the controller is currently on target; otherwise, true
+     */
     public boolean isOnTarget() {
         if (active) {
             return Math.abs(getError()) < tolerance;
@@ -101,12 +124,27 @@ public final class SuperPIDController {
         }
     }
 
-    public double calculateOutput() {
-        final double pidOutput = pidController.calculate(input.getAsDouble());
-        double fedForwardOutput = pidOutput + feedForward.apply(getTarget(), pidOutput);
-        return clamp(fedForwardOutput, outputRange);
+    /**
+     * If a {@link #dashPidKey} is set, get a new set of PID constants from the SmartDashboard.
+     */
+    public void maybeSetConstantsFromDash() {
+        if (isPidDashEnabled()) {
+            setConstants(SmartDashboardUtils.getPID(dashPidKey));
+        } // TODO: Should it really do nothing if the pidKey is unset?
     }
 
+    /**
+     * If a {@link #dashPidKey} is set, update the SmartDashboard to display the current PID Constants.
+     */
+    public void maybePutConstantsToDash() {
+        if (isPidDashEnabled()) {
+            SmartDashboardUtils.putPID(dashPidKey, pidConstants);
+        }
+    }
+
+    /**
+     * Sends to {@link #output} the next calculated output value.
+     */
     public void execute() {
         if (active) {
             if (isOnTarget()) {
@@ -117,23 +155,33 @@ public final class SuperPIDController {
         }
     }
 
+    /**
+     * Stops the controller attempting to reach the previously set target.
+     */
     public void stop() {
         reset();
         active = false;
     }
 
+    /**
+     * Resumes the controller attempting to reach the previously set target.
+     */
     public void start() {
         reset();
         active = true;
     }
 
+    /**
+     * Resets all memory of previous errors and corrections.
+     */
     public void reset() {
         pidController.reset();
     }
 
-    public void runToSetpoint(Double setpoint) {
-        ensureActive();
-        pidController.setSetpoint(setpoint);
+    private double calculateOutput() {
+        final double pidOutput = pidController.calculate(input.getAsDouble());
+        double fedForwardOutput = pidOutput + feedForward.apply(getTarget(), pidOutput);
+        return clamp(fedForwardOutput, outputRange);
     }
 
     private void ensureActive() {

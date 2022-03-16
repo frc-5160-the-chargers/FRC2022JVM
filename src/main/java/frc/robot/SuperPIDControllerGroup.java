@@ -2,6 +2,9 @@ package frc.robot;
 
 import java.util.Arrays;
 
+/**
+ * Allows the manipulation of multiple {@link SuperPIDController}s at the same time.
+ */
 public class SuperPIDControllerGroup {
     SuperPIDController[] controllers;
 
