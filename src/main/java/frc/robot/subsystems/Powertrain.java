@@ -1,7 +1,5 @@
 package frc.robot.subsystems;
 
-import frc.robot.utils.SparkMotorConfig;
-
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
@@ -9,6 +7,8 @@ import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
+import static frc.robot.subsystems.Powertrain.Mode.*;
 
 public class Powertrain extends SubsystemBase {
     public final CANSparkMax left1 = new CANSparkMax(1, MotorType.kBrushless);
@@ -21,18 +21,14 @@ public class Powertrain extends SubsystemBase {
     public final MotorControllerGroup left_motors = new MotorControllerGroup(left1, left2);
     public final MotorControllerGroup right_motors = new MotorControllerGroup(right1, right2);
     
-    public final DifferentialDrive differential_drive = new DifferentialDrive(left_motors, right_motors);
+    public final DifferentialDrive differentialDrive = new DifferentialDrive(left_motors, right_motors);
 
     private double power;
     private double rotation;
-    private double left_power;
-    private double right_power;
+    private double leftPower;
+    private double rightPower;
 
-    public final int TANK_DRIVE = 0;
-    public final int CURVATURE_DRIVE = 1;
-    public final int ARCADE_DRIVE = 2;
-
-    public int mode;
+    public Mode mode;
 
     public Powertrain() {
         for (CANSparkMax motor : motors) {
@@ -41,7 +37,7 @@ public class Powertrain extends SubsystemBase {
         reset();
     }
 
-    private void ConfigureSpark(CANSparkMax motor){
+    private void ConfigureSpark(CANSparkMax motor) {
         motor.enableVoltageCompensation(11);
         motor.setSmartCurrentLimit(39);
         motor.setIdleMode(IdleMode.kBrake);
@@ -50,54 +46,65 @@ public class Powertrain extends SubsystemBase {
         motor.burnFlash();
     }
 
-    public void reset(){
+    public void reset() {
         mode = CURVATURE_DRIVE;
 
         power = 0;
         rotation = 0;
-        left_power = 0;
-        right_power = 0;
+        leftPower = 0;
+        rightPower = 0;
     }
 
-    public void set_tank_powers(double left_power, double right_power){
+    public void setTankPowers(double left_power, double right_power) {
         mode = TANK_DRIVE;
         power = rotation = 0;
 
-        this.left_power = left_power;
-        this.right_power = right_power;
+        this.leftPower = left_power;
+        this.rightPower = right_power;
     }
     
-    public void set_arcade_powers(double power, double rotation){
+    public void setArcadePowers(double power, double rotation) {
         mode = ARCADE_DRIVE;
-        left_power = right_power = 0;
+        leftPower = rightPower = 0;
 
         this.power = power;
         this.rotation = rotation;
     }
 
-    public void tank_drive(double left_power, double right_power){
+    public void tankDrive(double left_power, double right_power) {
         mode = TANK_DRIVE;
-        set_tank_powers(left_power, right_power);
+        setTankPowers(left_power, right_power);
     }
-    public void arcade_drive(double power, double rotation){
+    public void arcadeDrive(double power, double rotation) {
         mode = ARCADE_DRIVE;
-        set_arcade_powers(power, rotation);
+        setArcadePowers(power, rotation);
     }
-    public void curvature_drive(double power, double rotation){
+    public void curvatureDrive(double power, double rotation) {
         mode = CURVATURE_DRIVE;
-        set_arcade_powers(power, rotation);
+        setArcadePowers(power, rotation);
     }
 
     @Override
     public void periodic() {
         if (mode == TANK_DRIVE){
-            differential_drive.tankDrive(left_power, right_power, false);
+            differentialDrive.tankDrive(leftPower, rightPower, false);
         }
         else if (mode == ARCADE_DRIVE){
-            differential_drive.arcadeDrive(power, rotation, false);
+            differentialDrive.arcadeDrive(power, rotation, false);
         }
         else if (mode == CURVATURE_DRIVE){
-            differential_drive.curvatureDrive(power, rotation, true);
+            differentialDrive.curvatureDrive(power, rotation, true);
+        }
+    }
+
+    enum Mode {
+        TANK_DRIVE(0),
+        CURVATURE_DRIVE(1),
+        ARCADE_DRIVE(2);
+
+        final int value;
+        Mode(int value) {
+            this.value = value;
         }
     }
 }

@@ -4,19 +4,12 @@ import java.util.function.BiFunction;
 import java.util.function.DoubleConsumer;
 import java.util.function.DoubleSupplier;
 
-import frc.robot.subsystems.Powertrain;
 import frc.robot.SuperPIDController;
 import frc.robot.SuperPIDControllerGroup;
 import frc.robot.utils.*;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.SparkMaxRelativeEncoder;
 import com.revrobotics.RelativeEncoder;
 
 import static frc.robot.subsystems.Drivetrain.State.*;
@@ -39,7 +32,7 @@ public class Drivetrain extends SubsystemBase {
     private final double wheelDiameter = 6;
     private final double kFStraight = 0.15;
     private final double kFTurn = 0;
-    private final double turn_tolerance = 1;
+    private final double turnTolerance = 1;
     private final double positionTolerance = 1;
 
     private State state;
@@ -58,18 +51,18 @@ public class Drivetrain extends SubsystemBase {
         encoderRight = powertrain.right1.getEncoder();
 
         final DoubleSupplier turnInput = this::getDistance;
-        final DoubleConsumer turnOutput = x -> { rotation=x; powertrain.mode=powertrain.ARCADE_DRIVE; };
+        final DoubleConsumer turnOutput = x -> { rotation=x; powertrain.mode=Powertrain.Mode.ARCADE_DRIVE; };
         final BiFunction<Double, Double, Double> turnFeedfowards = (target, error) -> 0.0;
         final Range turnOutputRange = new Range(-maxAutoPower, maxAutoPower);
         turnPid = new SuperPIDController.Builder(turnPidConstants, turnInput, turnOutput)
             .dashPidKey(turnPidKey)
             .feedForward(turnFeedfowards)
             .outputRange(turnOutputRange)
-            .tolerance(turn_tolerance)
+            .tolerance(turnTolerance)
             .build();
 
         final DoubleSupplier positionInput = this::getDistance;
-        final DoubleConsumer positionOutput = x -> {power=x; powertrain.mode=powertrain.ARCADE_DRIVE;};
+        final DoubleConsumer positionOutput = x -> {power=x; powertrain.mode=Powertrain.Mode.ARCADE_DRIVE; };
         final BiFunction<Double, Double, Double> positionFeedfowards = (target, error) -> 0.0;
         final Range positionOutputRange = new Range(-maxAutoPower, maxAutoPower);
         positionPid = new SuperPIDController.Builder(positionPidConstants, positionInput, positionOutput)
@@ -123,26 +116,26 @@ public class Drivetrain extends SubsystemBase {
     public void tankDrive(double left_power, double right_power) {
         pidControllerGroup.stopAll();
         state = MANUAL_DRIVE;
-        powertrain.tank_drive(left_power, right_power);
+        powertrain.tankDrive(left_power, right_power);
     }
 
     public void curvatureDrive(double power, double rotation) {
         pidControllerGroup.stopAll();
         state = MANUAL_DRIVE;
-        powertrain.curvature_drive(power, rotation);
+        powertrain.curvatureDrive(power, rotation);
     }
 
     public void driveStraight(double power) {
         if (state!=AIDED_DRIVE_STRAIGHT){
             pidControllerGroup.stopAll();
             state = AIDED_DRIVE_STRAIGHT;
-            powertrain.mode = powertrain.ARCADE_DRIVE;
+            powertrain.mode = Powertrain.Mode.ARCADE_DRIVE;
             turnPid.setTarget(navx.get_heading());
         }
         this.power = power;
     }
 
-    public void drive_to_position(double position){
+    public void driveToPosition(double position){
         if (state != PID_STRAIGHT){
             pidControllerGroup.stopAll();
             powertrain.reset();
@@ -151,8 +144,8 @@ public class Drivetrain extends SubsystemBase {
         }
     }
 
-    public void set_power_scaling(double new_scaling){
-        powertrain.differential_drive.setMaxOutput(new_scaling);
+    public void setPowerScaling(double newScaling){
+        powertrain.differentialDrive.setMaxOutput(newScaling);
     }
 
     public void stop(){
@@ -163,8 +156,8 @@ public class Drivetrain extends SubsystemBase {
     @Override
     public void periodic(){
         pidControllerGroup.executeAll();
-        if (powertrain.mode == powertrain.ARCADE_DRIVE){
-            powertrain.set_arcade_powers(power, rotation);
+        if (powertrain.mode == Powertrain.Mode.ARCADE_DRIVE){
+            powertrain.setArcadePowers(power, rotation);
         }
     }
 
