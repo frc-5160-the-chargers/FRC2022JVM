@@ -10,13 +10,6 @@ import frc.robot.SuperPIDControllerGroup;
 import frc.robot.utils.*;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
-
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.SparkMaxRelativeEncoder;
 import com.revrobotics.RelativeEncoder;
 
 public class Drivetrain extends SubsystemBase{
@@ -63,32 +56,22 @@ public class Drivetrain extends SubsystemBase{
 
     private int state;
     private double power;
-    private double turn;
+    private double rotation;
 
-    private final DoubleSupplier turn_supplier = () -> { return get_distance(); };
-    private final DoubleConsumer turn_consumer = (x)->{turn=x;};
-    private final BiFunction<Double, Double, Double> turn_feedfowards = (target, error)->{ return 0.0;};
-    private final Range turn_output_range = new Range(-max_auto_power, max_auto_power);
-    private SuperPIDController turn_pid = new SuperPIDController.Builder(position_pid_value, turn_supplier, turn_consumer)
-        .dashPidKey(turn_pid_key)
-        .feedForward(turn_feedfowards)
-        .outputRange(turn_output_range)
-        .tolerance(turn_tolerance)
-    .build();
+    private final DoubleSupplier turn_supplier;
+    private final DoubleConsumer turn_consumer;
+    private final BiFunction<Double, Double, Double> turn_feedfowards;
+    private final Range turn_output_range;
+    private SuperPIDController turn_pid;
 
-    private final DoubleSupplier position_supplier = () -> { return get_distance(); };
-    private final DoubleConsumer position_consumer = (x)->{power=x;};
-    private final BiFunction<Double, Double, Double> position_feedfowards = (target, error)->{ return 0.0; };
-    private final Range position_output_range = new Range(-max_auto_power, max_auto_power);
-    private SuperPIDController position_pid = new SuperPIDController.Builder(position_pid_value, position_supplier, position_consumer)
-        .dashPidKey(position_pid_key)
-        .feedForward(position_feedfowards)
-        .outputRange(position_output_range)
-        .tolerance(position_tolerance)
-    .build();
+    private final DoubleSupplier position_supplier;
+    private final DoubleConsumer position_consumer;
+    private final BiFunction<Double, Double, Double> position_feedfowards;
+    private final Range position_output_range;
+    private SuperPIDController position_pid;
     
-    SuperPIDController[] pid_controllers = {turn_pid, position_pid};
-    private SuperPIDControllerGroup pid_manager = new SuperPIDControllerGroup(pid_controllers);
+    SuperPIDController[] pid_controllers;
+    private SuperPIDControllerGroup pid_manager;
 
     public Drivetrain(Powertrain powertrain, NavX navx) {
         this.powertrain = powertrain;
@@ -97,6 +80,31 @@ public class Drivetrain extends SubsystemBase{
         encoder_left = powertrain.motors[0].getEncoder();
         encoder_right = powertrain.motors[2].getEncoder();
         encoders = new RelativeEncoder[]{encoder_left, encoder_right};
+
+        turn_supplier = () -> { return get_distance(); };
+        turn_consumer = (x)->{rotation=x; powertrain.mode=powertrain.ARCADE_DRIVE;};
+        turn_feedfowards = (target, error)->{ return 0.0;};
+        turn_output_range = new Range(-max_auto_power, max_auto_power);
+        turn_pid = new SuperPIDController.Builder(position_pid_value, turn_supplier, turn_consumer)
+            .dashPidKey(turn_pid_key)
+            .feedForward(turn_feedfowards)
+            .outputRange(turn_output_range)
+            .tolerance(turn_tolerance)
+        .build();
+
+        position_supplier = () -> { return get_distance(); };
+        position_consumer = (x)->{power=x; powertrain.mode=powertrain.ARCADE_DRIVE;};
+        position_feedfowards = (target, error)->{ return 0.0; };
+        position_output_range = new Range(-max_auto_power, max_auto_power);
+        position_pid = new SuperPIDController.Builder(position_pid_value, position_supplier, position_consumer)
+            .dashPidKey(position_pid_key)
+            .feedForward(position_feedfowards)
+            .outputRange(position_output_range)
+            .tolerance(position_tolerance)
+        .build();
+
+        pid_controllers = new SuperPIDController[]{turn_pid, position_pid};
+        pid_manager = new SuperPIDControllerGroup(pid_controllers);
 
         reset();
     }
@@ -157,5 +165,31 @@ public class Drivetrain extends SubsystemBase{
             turn_pid.setTarget(navx.get_heading());
         }
         power = this.power;
+    }
+
+    public void drive_to_position(double position){
+        if (state != PID_STRAIGHT){
+            pid_manager.stopAll();
+            powertrain.reset();
+            state = PID_STRAIGHT;
+            position_pid.setTarget(position + get_distance());
+        }
+    }
+
+    public void set_power_scaling(double new_scaling){
+        powertrain.differential_drive.setMaxOutput(new_scaling);
+    }
+
+    public void stop(){
+        state = STOPPPED;
+        tank_drive(0, 0);
+    }
+
+    @Override
+    public void periodic(){
+        pid_manager.executeAll();
+        if (powertrain.mode == powertrain.ARCADE_DRIVE){
+            powertrain.set_arcade_powers(power, rotation);
+        }
     }
 }
