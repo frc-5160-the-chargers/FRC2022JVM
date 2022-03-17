@@ -4,12 +4,19 @@ import java.util.function.BiFunction;
 import java.util.function.DoubleConsumer;
 import java.util.function.DoubleSupplier;
 
+import frc.robot.subsystems.Powertrain;
 import frc.robot.SuperPIDController;
 import frc.robot.SuperPIDControllerGroup;
 import frc.robot.utils.*;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.SparkMaxRelativeEncoder;
 import com.revrobotics.RelativeEncoder;
 
 import static frc.robot.subsystems.Drivetrain.State.*;
@@ -51,7 +58,7 @@ public class Drivetrain extends SubsystemBase {
         encoderRight = powertrain.right1.getEncoder();
 
         final DoubleSupplier turnInput = this::getDistance;
-        final DoubleConsumer turnOutput = x -> rotation=x;
+        final DoubleConsumer turnOutput = x -> { rotation=x; powertrain.mode=powertrain.ARCADE_DRIVE; };
         final BiFunction<Double, Double, Double> turnFeedfowards = (target, error) -> 0.0;
         final Range turnOutputRange = new Range(-maxAutoPower, maxAutoPower);
         turnPid = new SuperPIDController.Builder(turnPidConstants, turnInput, turnOutput)
@@ -62,7 +69,7 @@ public class Drivetrain extends SubsystemBase {
             .build();
 
         final DoubleSupplier positionInput = this::getDistance;
-        final DoubleConsumer positionOutput = x -> {power=x; powertrain.mode= powertrain.ARCADE_DRIVE;};
+        final DoubleConsumer positionOutput = x -> {power=x; powertrain.mode=powertrain.ARCADE_DRIVE;};
         final BiFunction<Double, Double, Double> positionFeedfowards = (target, error) -> 0.0;
         final Range positionOutputRange = new Range(-maxAutoPower, maxAutoPower);
         positionPid = new SuperPIDController.Builder(positionPidConstants, positionInput, positionOutput)
@@ -133,6 +140,32 @@ public class Drivetrain extends SubsystemBase {
             turnPid.setTarget(navx.get_heading());
         }
         this.power = power;
+    }
+
+    public void drive_to_position(double position){
+        if (state != PID_STRAIGHT){
+            pidControllerGroup.stopAll();
+            powertrain.reset();
+            state = PID_STRAIGHT;
+            positionPid.setTarget(position + getDistance());
+        }
+    }
+
+    public void set_power_scaling(double new_scaling){
+        powertrain.differential_drive.setMaxOutput(new_scaling);
+    }
+
+    public void stop(){
+        state = STOPPED;
+        tankDrive(0, 0);
+    }
+
+    @Override
+    public void periodic(){
+        pidControllerGroup.executeAll();
+        if (powertrain.mode == powertrain.ARCADE_DRIVE){
+            powertrain.set_arcade_powers(power, rotation);
+        }
     }
 
     enum State {
