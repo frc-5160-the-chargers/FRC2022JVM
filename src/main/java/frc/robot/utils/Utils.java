@@ -1,7 +1,6 @@
 package frc.robot.utils;
 
 import java.util.Arrays;
-import java.util.stream.DoubleStream;
 
 public class Utils {
     public static double clamp(double value, double min, double max) {
@@ -16,5 +15,12 @@ public class Utils {
         return Arrays.stream(values)
             .average()
             .orElse(Double.NaN);
+    }
+
+    public static double mapValueInRange(final double value, final Range fromRange, final Range toRange) {
+        double clampedValue = clamp(value, fromRange);
+        double proportionIntoRange = (clampedValue - fromRange.lowerBound) / fromRange.getSpread();
+        double distanceIntoToRange = proportionIntoRange * toRange.getSpread();
+        return toRange.lowerBound + distanceIntoToRange;
     }
 }

@@ -13,4 +13,8 @@ public class Range
     public boolean contains(int number) {
         return (number >= upperBound && number <= lowerBound);
     }
+
+    public double getSpread() {
+        return upperBound - lowerBound;
+    }
 }
