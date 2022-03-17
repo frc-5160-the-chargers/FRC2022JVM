@@ -37,31 +37,11 @@ public class Drivetrain extends SubsystemBase {
 
     private State state;
     private double power;
-    private double turn;
+    private double rotation;
 
-    private final DoubleSupplier turnInput = this::getDistance;
-    private final DoubleConsumer turnOutput = x -> turn=x;
-    private final BiFunction<Double, Double, Double> turnFeedfowards = (target, error) -> 0.0;
-    private final Range turnOutputRange = new Range(-maxAutoPower, maxAutoPower);
-    private final SuperPIDController turn_pid = new SuperPIDController.Builder(turnPidConstants, turnInput, turnOutput)
-        .dashPidKey(turnPidKey)
-        .feedForward(turnFeedfowards)
-        .outputRange(turnOutputRange)
-        .tolerance(turn_tolerance)
-        .build();
-
-    private final DoubleSupplier positionInput = this::getDistance;
-    private final DoubleConsumer positionOutput = x -> power=x;
-    private final BiFunction<Double, Double, Double> positionFeedfowards = (target, error) -> 0.0;
-    private final Range positionOutputRange = new Range(-maxAutoPower, maxAutoPower);
-    private final SuperPIDController position_pid = new SuperPIDController.Builder(positionPidConstants, positionInput, positionOutput)
-        .dashPidKey(positionPidKey)
-        .feedForward(positionFeedfowards)
-        .outputRange(positionOutputRange)
-        .tolerance(positionTolerance)
-        .build();
-    
-    private final SuperPIDControllerGroup pid_manager = new SuperPIDControllerGroup(turn_pid, position_pid);
+    private final SuperPIDController turnPid;
+    private final SuperPIDController positionPid;
+    private final SuperPIDControllerGroup pidControllerGroup;
 
     public Drivetrain(Powertrain powertrain, NavX navx) {
         this.powertrain = powertrain;
@@ -69,6 +49,30 @@ public class Drivetrain extends SubsystemBase {
 
         encoderLeft = powertrain.left1.getEncoder();
         encoderRight = powertrain.right1.getEncoder();
+
+        final DoubleSupplier turnInput = this::getDistance;
+        final DoubleConsumer turnOutput = x -> rotation=x;
+        final BiFunction<Double, Double, Double> turnFeedfowards = (target, error) -> 0.0;
+        final Range turnOutputRange = new Range(-maxAutoPower, maxAutoPower);
+        turnPid = new SuperPIDController.Builder(turnPidConstants, turnInput, turnOutput)
+            .dashPidKey(turnPidKey)
+            .feedForward(turnFeedfowards)
+            .outputRange(turnOutputRange)
+            .tolerance(turn_tolerance)
+            .build();
+
+        final DoubleSupplier positionInput = this::getDistance;
+        final DoubleConsumer positionOutput = x -> {power=x; powertrain.mode= powertrain.ARCADE_DRIVE;};
+        final BiFunction<Double, Double, Double> positionFeedfowards = (target, error) -> 0.0;
+        final Range positionOutputRange = new Range(-maxAutoPower, maxAutoPower);
+        positionPid = new SuperPIDController.Builder(positionPidConstants, positionInput, positionOutput)
+            .dashPidKey(positionPidKey)
+            .feedForward(positionFeedfowards)
+            .outputRange(positionOutputRange)
+            .tolerance(positionTolerance)
+            .build();
+
+        pidControllerGroup = new SuperPIDControllerGroup(turnPid, positionPid);
 
         reset();
     }
@@ -110,23 +114,23 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public void tankDrive(double left_power, double right_power) {
-        pid_manager.stopAll();
+        pidControllerGroup.stopAll();
         state = MANUAL_DRIVE;
         powertrain.tank_drive(left_power, right_power);
     }
 
     public void curvatureDrive(double power, double rotation) {
-        pid_manager.stopAll();
+        pidControllerGroup.stopAll();
         state = MANUAL_DRIVE;
         powertrain.curvature_drive(power, rotation);
     }
 
     public void driveStraight(double power) {
         if (state!=AIDED_DRIVE_STRAIGHT){
-            pid_manager.stopAll();
+            pidControllerGroup.stopAll();
             state = AIDED_DRIVE_STRAIGHT;
             powertrain.mode = powertrain.ARCADE_DRIVE;
-            turn_pid.setTarget(navx.get_heading());
+            turnPid.setTarget(navx.get_heading());
         }
         this.power = power;
     }
