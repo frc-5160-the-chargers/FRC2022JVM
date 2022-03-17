@@ -35,7 +35,7 @@ public class Drivetrain extends SubsystemBase {
     private final double turnTolerance = 1;
     private final double positionTolerance = 1;
 
-    private State state;
+    public State state;
     private double power;
     private double rotation;
 
@@ -161,7 +161,7 @@ public class Drivetrain extends SubsystemBase {
         }
     }
 
-    enum State {
+    public enum State {
         // 0-9: Manual Modes
         MANUAL_DRIVE(0),
 

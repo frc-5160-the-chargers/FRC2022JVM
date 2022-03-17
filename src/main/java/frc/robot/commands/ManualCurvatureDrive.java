@@ -28,13 +28,13 @@ public class ManualCurvatureDrive extends CommandBase{
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        drivetrain.curvature_drive(power.getAsDouble(), rotation.getAsDouble());
+        drivetrain.curvatureDrive(power.getAsDouble(), rotation.getAsDouble());
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        drivetrain.state = drivetrain.STOPPPED;
+        drivetrain.state = Drivetrain.State.STOPPED;
     }
 
     // Returns true when the command should end.
