@@ -9,14 +9,14 @@ import java.util.Objects;
  */
 public class SparkMotorConfig {
     public final double voltageCompensation;
-    public final double stallCurrentLimit;
+    public final int stallCurrentLimit;
     public final CANSparkMax.IdleMode defaultMode;
     public final double rampRate;
     public final boolean reverseMotor;
 
     public SparkMotorConfig(
         final double voltageCompensation,
-        final double stallCurrentLimit,
+        final int stallCurrentLimit,
         final CANSparkMax.IdleMode defaultMode,
         final double rampRate,
         final boolean reverseMotor
@@ -26,6 +26,16 @@ public class SparkMotorConfig {
         this.defaultMode = defaultMode;
         this.rampRate = rampRate;
         this.reverseMotor = reverseMotor;
+    }
+
+    static void configureSpark(CANSparkMax spark, SparkMotorConfig config) {
+        spark.restoreFactoryDefaults();
+        spark.enableVoltageCompensation(config.voltageCompensation);
+        spark.setSmartCurrentLimit(config.stallCurrentLimit);
+        spark.setIdleMode(config.defaultMode);
+        spark.setOpenLoopRampRate(config.rampRate);
+        spark.setClosedLoopRampRate(config.rampRate);
+        spark.setInverted(config.reverseMotor);
     }
 
     @Override
