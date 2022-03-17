@@ -8,7 +8,7 @@ import java.util.Arrays;
 public class SuperPIDControllerGroup {
     SuperPIDController[] controllers;
 
-    public SuperPIDControllerGroup(SuperPIDController[] controllers) {
+    public SuperPIDControllerGroup(SuperPIDController... controllers) {
         this.controllers = controllers;
     }
 

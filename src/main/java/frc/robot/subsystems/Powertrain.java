@@ -8,18 +8,18 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-public class Powertrain extends SubsystemBase{
-    final CANSparkMax left1 = new CANSparkMax(1, MotorType.kBrushless);
-    final CANSparkMax left2 = new CANSparkMax(2, MotorType.kBrushless);
-    final CANSparkMax right1 = new CANSparkMax(3, MotorType.kBrushless);
-    final CANSparkMax right2 = new CANSparkMax(4, MotorType.kBrushless);
+public class Powertrain extends SubsystemBase {
+    public final CANSparkMax left1 = new CANSparkMax(1, MotorType.kBrushless);
+    public final CANSparkMax left2 = new CANSparkMax(2, MotorType.kBrushless);
+    public final CANSparkMax right1 = new CANSparkMax(3, MotorType.kBrushless);
+    public final CANSparkMax right2 = new CANSparkMax(4, MotorType.kBrushless);
 
-    final CANSparkMax[] motors = {left1, left2, right1, right2};
+    public final CANSparkMax[] motors = {left1, left2, right1, right2};
 
-    final MotorControllerGroup left_motors = new MotorControllerGroup(left1, left2);
-    final MotorControllerGroup right_motors = new MotorControllerGroup(right1, right2);    
+    public final MotorControllerGroup left_motors = new MotorControllerGroup(left1, left2);
+    public final MotorControllerGroup right_motors = new MotorControllerGroup(right1, right2);
     
-    final DifferentialDrive differential_drive = new DifferentialDrive(left_motors, right_motors);
+    public final DifferentialDrive differential_drive = new DifferentialDrive(left_motors, right_motors);
 
     private double power;
     private double rotation;

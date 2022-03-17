@@ -73,8 +73,8 @@ public final class SuperPIDController {
         this.feedForward = Objects.requireNonNullElseGet(builder.feedForward, () -> (target, error) -> 0.0);
         this.outputRange = Objects.requireNonNullElseGet(builder.outputRange, () -> new Range(-1.0, 1.0));
         this.tolerance = Objects.requireNonNullElse(builder.tolerance, 1.0);
-
         this.pidController = new PIDController(0, 0, 0);
+
         PIDConstants.updateController(pidController, pidConstants);
 
         active = false;
