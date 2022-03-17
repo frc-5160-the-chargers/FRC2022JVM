@@ -77,7 +77,7 @@ public class Drivetrain extends SubsystemBase {
         reset();
     }
 
-    private void reset(){
+    public void reset(){
         state = MANUAL_DRIVE;
         encoderLeft.setPosition(0);
         encoderRight.setPosition(1);
