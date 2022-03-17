@@ -21,9 +21,9 @@ public class Drivetrain extends SubsystemBase{
 
     private final RelativeEncoder[] encoders;
 
-    private final int MANUAL_DRIVE = 0;
-    private final int AIDED_DRIVE_STRAIGHT = 10;
-    private final int STOPPPED = 11;
+    public final int MANUAL_DRIVE = 0;
+    public final int AIDED_DRIVE_STRAIGHT = 10;
+    public final int STOPPPED = 11;
 
     private final int PID_TURNING = 20;
     private final int PID_STRAIGHT = 21;
@@ -54,7 +54,7 @@ public class Drivetrain extends SubsystemBase{
     private final double turn_tolerance = 1;
     private final double position_tolerance = 1;
 
-    private int state;
+    public int state;
     private double power;
     private double rotation;
 
@@ -109,7 +109,7 @@ public class Drivetrain extends SubsystemBase{
         reset();
     }
 
-    private void reset(){
+    public void reset(){
         state = MANUAL_DRIVE;
         encoder_left.setPosition(0);
         encoder_right.setPosition(1);
