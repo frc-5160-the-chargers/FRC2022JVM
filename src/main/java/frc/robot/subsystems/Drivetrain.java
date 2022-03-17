@@ -4,158 +4,150 @@ import java.util.function.BiFunction;
 import java.util.function.DoubleConsumer;
 import java.util.function.DoubleSupplier;
 
-import frc.robot.subsystems.Powertrain;
 import frc.robot.SuperPIDController;
 import frc.robot.SuperPIDControllerGroup;
 import frc.robot.utils.*;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.SparkMaxRelativeEncoder;
 import com.revrobotics.RelativeEncoder;
 
-public class Drivetrain extends SubsystemBase{
+import static frc.robot.subsystems.Drivetrain.State.*;
+
+public class Drivetrain extends SubsystemBase {
     private final Powertrain powertrain;
     private final NavX navx;
 
-    private final RelativeEncoder encoder_left;
-    private final RelativeEncoder encoder_right;
+    private final RelativeEncoder encoderLeft;
+    private final RelativeEncoder encoderRight;
 
-    private final RelativeEncoder[] encoders;
+    private final String turnPidKey = "Drivetrain Turn PID";
+    private final PIDConstants turnPidConstants = new PIDConstants(-0.1, 0, -0.01);
 
-    private final int MANUAL_DRIVE = 0;
-    private final int AIDED_DRIVE_STRAIGHT = 10;
-    private final int STOPPPED = 11;
+    private final String positionPidKey = "Drivetrain Position PID";
+    private final PIDConstants positionPidConstants = new PIDConstants(0.035, 0, 0.001);
 
-    private final int PID_TURNING = 20;
-    private final int PID_STRAIGHT = 21;
-    private final int PID_LIMELIGHT_TURNING = 22;
-    private final int PID_LIMELIGHT_DRIVE = 23;
-
-    private final int BOTH = 0;
-    private final int LEFT = 1;
-    private final int RIGHT = 2;
-
-    private final String turn_pid_key = "Drivetrain Turn PID";
-    private final PIDConstants turn_pid_value = new PIDConstants(-0.1, 0, -0.01);
-
-    private final String position_pid_key = "Drivetrain Position PID";
-    private final PIDConstants position_pid_value = new PIDConstants(0.035, 0, 0.001);
-
-    private final String limelight_turn_pid_key = "Drivetrain Limelight Turning PID";
-    private final PIDConstants limelight_turn_pid_value = new PIDConstants(0.2, 0.001, 0.1);
-
-    private final String limelight_position_pid_key = "Drivetrain Limelight Distance Driving PID";
-    private final PIDConstants limelight_position_pid_value = new PIDConstants(0.035, 0, 0.001);
-
-    private final double max_auto_power = .4;
-    private final double gear_ratio = 1/10.71;
-    private final double wheel_diameter = 6.;
-    private final double kF_straight = 0.15;
-    private final double kF_turn = 0;
+    private final double maxAutoPower = .4;
+    private final double gearRatio = 1/10.71;
+    private final double wheelDiameter = 6;
+    private final double kFStraight = 0.15;
+    private final double kFTurn = 0;
     private final double turn_tolerance = 1;
-    private final double position_tolerance = 1;
+    private final double positionTolerance = 1;
 
-    private int state;
+    private State state;
     private double power;
     private double turn;
 
-    private final DoubleSupplier turn_supplier = () -> { return get_distance(); };
-    private final DoubleConsumer turn_consumer = (x)->{turn=x;};
-    private final BiFunction<Double, Double, Double> turn_feedfowards = (target, error)->{ return 0.0;};
-    private final Range turn_output_range = new Range(-max_auto_power, max_auto_power);
-    private SuperPIDController turn_pid = new SuperPIDController.Builder(position_pid_value, turn_supplier, turn_consumer)
-        .dashPidKey(turn_pid_key)
-        .feedForward(turn_feedfowards)
-        .outputRange(turn_output_range)
+    private final DoubleSupplier turnInput = this::getDistance;
+    private final DoubleConsumer turnOutput = x -> turn=x;
+    private final BiFunction<Double, Double, Double> turnFeedfowards = (target, error) -> 0.0;
+    private final Range turnOutputRange = new Range(-maxAutoPower, maxAutoPower);
+    private final SuperPIDController turn_pid = new SuperPIDController.Builder(turnPidConstants, turnInput, turnOutput)
+        .dashPidKey(turnPidKey)
+        .feedForward(turnFeedfowards)
+        .outputRange(turnOutputRange)
         .tolerance(turn_tolerance)
-    .build();
+        .build();
 
-    private final DoubleSupplier position_supplier = () -> { return get_distance(); };
-    private final DoubleConsumer position_consumer = (x)->{power=x;};
-    private final BiFunction<Double, Double, Double> position_feedfowards = (target, error)->{ return 0.0; };
-    private final Range position_output_range = new Range(-max_auto_power, max_auto_power);
-    private SuperPIDController position_pid = new SuperPIDController.Builder(position_pid_value, position_supplier, position_consumer)
-        .dashPidKey(position_pid_key)
-        .feedForward(position_feedfowards)
-        .outputRange(position_output_range)
-        .tolerance(position_tolerance)
-    .build();
+    private final DoubleSupplier positionInput = this::getDistance;
+    private final DoubleConsumer positionOutput = x -> power=x;
+    private final BiFunction<Double, Double, Double> positionFeedfowards = (target, error) -> 0.0;
+    private final Range positionOutputRange = new Range(-maxAutoPower, maxAutoPower);
+    private final SuperPIDController position_pid = new SuperPIDController.Builder(positionPidConstants, positionInput, positionOutput)
+        .dashPidKey(positionPidKey)
+        .feedForward(positionFeedfowards)
+        .outputRange(positionOutputRange)
+        .tolerance(positionTolerance)
+        .build();
     
-    SuperPIDController[] pid_controllers = {turn_pid, position_pid};
-    private SuperPIDControllerGroup pid_manager = new SuperPIDControllerGroup(pid_controllers);
+    private final SuperPIDControllerGroup pid_manager = new SuperPIDControllerGroup(turn_pid, position_pid);
 
     public Drivetrain(Powertrain powertrain, NavX navx) {
         this.powertrain = powertrain;
         this.navx = navx;
 
-        encoder_left = powertrain.motors[0].getEncoder();
-        encoder_right = powertrain.motors[2].getEncoder();
-        encoders = new RelativeEncoder[]{encoder_left, encoder_right};
+        encoderLeft = powertrain.left1.getEncoder();
+        encoderRight = powertrain.right1.getEncoder();
 
         reset();
     }
 
     private void reset(){
         state = MANUAL_DRIVE;
-        encoder_left.setPosition(0);
-        encoder_right.setPosition(1);
+        encoderLeft.setPosition(0);
+        encoderRight.setPosition(1);
     }
 
-    public double get_position(){
-        double[] positions = {encoder_left.getPosition(), encoder_right.getPosition()};
+    public double getPosition() {
+        double[] positions = {encoderLeft.getPosition(), encoderRight.getPosition()};
         double rotations = Utils.average(positions);
-        double rotations_adjusted = rotations*gear_ratio;
+        double rotations_adjusted = rotations* gearRatio;
         double radians = rotations_adjusted*2*Math.PI;
 
         return radians;
     }
 
-    public double get_rotational_velocity(){
-        double[] velocities = {encoder_left.getVelocity(), encoder_right.getVelocity()};
+    public double getRotationalVelocity() {
+        double[] velocities = { encoderLeft.getVelocity(), encoderRight.getVelocity() };
         double rpm = Utils.average(velocities);
-        double rpm_adjusted = rpm*gear_ratio;
-        double omega = (2*rpm_adjusted*Math.PI)/60.;
+        double rpm_adjusted = rpm * gearRatio;
+        double omega = (2*rpm_adjusted*Math.PI)/60;
 
         return omega;
     }
 
-    public double get_distance(){
-        double rotations = get_position();
-        double distance = rotations*(wheel_diameter/2.);
+    public double getDistance() {
+        double rotations = getPosition();
+        double distance = rotations*(wheelDiameter/2);
         return distance;
     }
     
-    public double get_velocity(){
-        double radsec = get_rotational_velocity();
-        double vel = radsec*(wheel_diameter/2);
+    public double getVelocity() {
+        double radsec = getRotationalVelocity();
+        double vel = radsec*(wheelDiameter /2);
         return vel;
     }
 
-    public void tank_drive(double left_power, double right_power){
+    public void tankDrive(double left_power, double right_power) {
         pid_manager.stopAll();
         state = MANUAL_DRIVE;
         powertrain.tank_drive(left_power, right_power);
     }
 
-    public void curvature_drive(double power, double rotation){
+    public void curvatureDrive(double power, double rotation) {
         pid_manager.stopAll();
         state = MANUAL_DRIVE;
         powertrain.curvature_drive(power, rotation);
     }
 
-    public void drive_straight(double power){
+    public void driveStraight(double power) {
         if (state!=AIDED_DRIVE_STRAIGHT){
             pid_manager.stopAll();
             state = AIDED_DRIVE_STRAIGHT;
             powertrain.mode = powertrain.ARCADE_DRIVE;
             turn_pid.setTarget(navx.get_heading());
         }
-        power = this.power;
+        this.power = power;
+    }
+
+    enum State {
+        // 0-9: Manual Modes
+        MANUAL_DRIVE(0),
+
+        // 10-20: Aided Modes
+        AIDED_DRIVE_STRAIGHT(10),
+        STOPPED(11),
+
+        // 20-29: PID Modes
+        PID_TURNING(20),
+        PID_STRAIGHT(21),
+        PID_LIMELIGHT_TURNING(22),
+        PID_LIMELIGHT_DRIVE(23);
+
+        public final int value;
+        State(final int value) {
+            this.value = value;
+        }
     }
 }
