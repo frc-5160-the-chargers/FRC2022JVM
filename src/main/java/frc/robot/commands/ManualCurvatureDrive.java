@@ -4,8 +4,6 @@ import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.NavX;
-import frc.robot.subsystems.Powertrain;
 
 public class ManualCurvatureDrive extends CommandBase{
     private final Drivetrain drivetrain;
@@ -34,7 +32,7 @@ public class ManualCurvatureDrive extends CommandBase{
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        drivetrain.state = Drivetrain.State.STOPPED;
+        drivetrain.stop();
     }
 
     // Returns true when the command should end.

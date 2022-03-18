@@ -15,11 +15,11 @@ public class NavX extends SubsystemBase{
         navx.reset();
     }
 
-    public double get_heading(){ //in degrees
+    public double getHeading(){ //in degrees
         return navx.getAngle();
     }
 
-    public boolean is_connected(){
+    public boolean isConnected(){
         return navx.isConnected();
     }
 
