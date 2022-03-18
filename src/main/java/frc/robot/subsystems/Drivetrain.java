@@ -6,11 +6,14 @@ import java.util.function.DoubleSupplier;
 
 import frc.robot.SuperPIDController;
 import frc.robot.SuperPIDControllerGroup;
+import frc.robot.Constants.drivetrainConstants;
 import frc.robot.utils.*;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.revrobotics.RelativeEncoder;
+
+import frc.robot.Constants.drivetrainConstants;
 
 import static frc.robot.subsystems.Drivetrain.State.*;
 
@@ -20,20 +23,6 @@ public class Drivetrain extends SubsystemBase {
 
     private final RelativeEncoder encoderLeft;
     private final RelativeEncoder encoderRight;
-
-    private final String turnPidKey = "Drivetrain Turn PID";
-    private final PIDConstants turnPidConstants = new PIDConstants(-0.1, 0, -0.01);
-
-    private final String positionPidKey = "Drivetrain Position PID";
-    private final PIDConstants positionPidConstants = new PIDConstants(0.035, 0, 0.001);
-
-    private final double maxAutoPower = .4;
-    private final double gearRatio = 1/10.71;
-    private final double wheelDiameter = 6;
-    private final double kFStraight = 0.15;
-    private final double kFTurn = 0;
-    private final double turnTolerance = 1;
-    private final double positionTolerance = 1;
 
     public State state;
     private double power;
@@ -53,23 +42,23 @@ public class Drivetrain extends SubsystemBase {
         final DoubleSupplier turnInput = this::getDistance;
         final DoubleConsumer turnOutput = x -> { rotation=x; powertrain.mode=Powertrain.Mode.ARCADE_DRIVE; };
         final BiFunction<Double, Double, Double> turnFeedfowards = (target, error) -> 0.0;
-        final Range turnOutputRange = new Range(-maxAutoPower, maxAutoPower);
-        turnPid = new SuperPIDController.Builder(turnPidConstants, turnInput, turnOutput)
-            .dashPidKey(turnPidKey)
+        final Range turnOutputRange = new Range(-drivetrainConstants.max_motor_power, drivetrainConstants.max_motor_power);
+        turnPid = new SuperPIDController.Builder(drivetrainConstants.turn_pid, turnInput, turnOutput)
+            .dashPidKey(drivetrainConstants.turn_pid_key)
             .feedForward(turnFeedfowards)
             .outputRange(turnOutputRange)
-            .tolerance(turnTolerance)
+            .tolerance(drivetrainConstants.turn_tolerance)
             .build();
 
         final DoubleSupplier positionInput = this::getDistance;
         final DoubleConsumer positionOutput = x -> {power=x; powertrain.mode=Powertrain.Mode.ARCADE_DRIVE; };
         final BiFunction<Double, Double, Double> positionFeedfowards = (target, error) -> 0.0;
-        final Range positionOutputRange = new Range(-maxAutoPower, maxAutoPower);
-        positionPid = new SuperPIDController.Builder(positionPidConstants, positionInput, positionOutput)
-            .dashPidKey(positionPidKey)
+        final Range positionOutputRange = new Range(-drivetrainConstants.max_motor_power, drivetrainConstants.max_motor_power);
+        positionPid = new SuperPIDController.Builder(drivetrainConstants.position_pid, positionInput, positionOutput)
+            .dashPidKey(drivetrainConstants.position_pid_key)
             .feedForward(positionFeedfowards)
             .outputRange(positionOutputRange)
-            .tolerance(positionTolerance)
+            .tolerance(drivetrainConstants.position_tolerance)
             .build();
 
         pidControllerGroup = new SuperPIDControllerGroup(turnPid, positionPid);
@@ -86,7 +75,7 @@ public class Drivetrain extends SubsystemBase {
     public double getPosition() {
         double[] positions = {encoderLeft.getPosition(), encoderRight.getPosition()};
         double rotations = Utils.average(positions);
-        double rotations_adjusted = rotations* gearRatio;
+        double rotations_adjusted = rotations* drivetrainConstants.gear_ratio;
         double radians = rotations_adjusted*2*Math.PI;
 
         return radians;
@@ -95,7 +84,7 @@ public class Drivetrain extends SubsystemBase {
     public double getRotationalVelocity() {
         double[] velocities = { encoderLeft.getVelocity(), encoderRight.getVelocity() };
         double rpm = Utils.average(velocities);
-        double rpm_adjusted = rpm * gearRatio;
+        double rpm_adjusted = rpm * drivetrainConstants.gear_ratio;
         double omega = (2*rpm_adjusted*Math.PI)/60;
 
         return omega;
@@ -103,13 +92,13 @@ public class Drivetrain extends SubsystemBase {
 
     public double getDistance() {
         double rotations = getPosition();
-        double distance = rotations*(wheelDiameter/2);
+        double distance = rotations*(drivetrainConstants.wheel_diameter/2);
         return distance;
     }
     
     public double getVelocity() {
         double radsec = getRotationalVelocity();
-        double vel = radsec*(wheelDiameter /2);
+        double vel = radsec*(drivetrainConstants.wheel_diameter /2);
         return vel;
     }
 

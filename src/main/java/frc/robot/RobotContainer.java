@@ -7,10 +7,13 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.ManualCurvatureDrive;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.NavX;
+import frc.robot.subsystems.Oi;
 import frc.robot.subsystems.Powertrain;
+
 import edu.wpi.first.wpilibj2.command.Command;
 
 /**
@@ -22,8 +25,14 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final NavX navx = new NavX();
+  private final Oi oi = new Oi();
   private final Powertrain powertrain = new Powertrain();
   private final Drivetrain drivetrain = new Drivetrain(powertrain, navx);
+
+  private final Command manualDrive = new ManualCurvatureDrive(oi, drivetrain);
+
+  private final XboxController driver_controller = new XboxController(0);
+  private final XboxController operator_controller = new XboxController(1);
 
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
@@ -32,6 +41,7 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
+    drivetrain.setDefaultCommand(manualDrive);
   }
 
   /**

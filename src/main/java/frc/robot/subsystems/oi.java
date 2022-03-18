@@ -1,5 +1,8 @@
 package frc.robot.subsystems;
 
+import frc.robot.utils.Range;
+import frc.robot.utils.Utils;
+
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -20,6 +23,8 @@ public class Oi extends SubsystemBase{
             return i;
         }
     }
+
+    //Driver
 
     public boolean ready_straight_assist(){
         double[] output = get_raw_output();
@@ -70,9 +75,43 @@ public class Oi extends SubsystemBase{
         return driver_controller.getRightTriggerAxis();
     }
 
-    // public double process_turbo_mode(){
-    //     double modifier = get_turbo_mode_modifier();
-    //     double x = map_value(modifier, 0, 1, max_motor_power, turbo_mode_power);
-    //     return x;
-    // }
+    public double process_turbo_mode(){
+        double modifier = get_turbo_mode_modifier();
+        double x = Utils.mapValueInRange(modifier, new Range(0,1), new Range(max_motor_power, turbo_mode_power));
+        return x;   
+    }
+
+    //Operator
+
+    public boolean get_intake_outtake(){
+        return operator_controller.getAButton();
+    }
+
+    public boolean get_intake_intake(){
+        return operator_controller.getBButton();
+    }
+        
+    public boolean get_intake_raise(){
+        return operator_controller.getRightBumperPressed();
+    }
+
+    public boolean get_intake_lower(){
+        return operator_controller.getLeftBumperPressed();
+    }
+
+    public boolean get_climber_raise(){
+        return operator_controller.getXButton();
+    }
+    
+    public boolean get_climber_climb(){
+        return operator_controller.getYButton();
+    }
+
+    public boolean get_position_control(){
+        return operator_controller.getBackButtonPressed();
+    }
+    
+    public boolean get_rotation_control(){
+        return operator_controller.getStartButtonPressed();
+    }
 }

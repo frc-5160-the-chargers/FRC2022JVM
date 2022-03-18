@@ -8,13 +8,15 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import frc.robot.Constants.drivetrainConstants;
+
 import static frc.robot.subsystems.Powertrain.Mode.*;
 
 public class Powertrain extends SubsystemBase {
-    public final CANSparkMax left1 = new CANSparkMax(1, MotorType.kBrushless);
-    public final CANSparkMax left2 = new CANSparkMax(2, MotorType.kBrushless);
-    public final CANSparkMax right1 = new CANSparkMax(3, MotorType.kBrushless);
-    public final CANSparkMax right2 = new CANSparkMax(4, MotorType.kBrushless);
+    public final CANSparkMax left1 = new CANSparkMax(drivetrainConstants.motors_left[0], MotorType.kBrushless);
+    public final CANSparkMax left2 = new CANSparkMax(drivetrainConstants.motors_left[1], MotorType.kBrushless);
+    public final CANSparkMax right1 = new CANSparkMax(drivetrainConstants.motors_right[0], MotorType.kBrushless);
+    public final CANSparkMax right2 = new CANSparkMax(drivetrainConstants.motors_right[1], MotorType.kBrushless);
 
     public final CANSparkMax[] motors = {left1, left2, right1, right2};
 
@@ -38,11 +40,11 @@ public class Powertrain extends SubsystemBase {
     }
 
     private void ConfigureSpark(CANSparkMax motor) {
-        motor.enableVoltageCompensation(11);
-        motor.setSmartCurrentLimit(39);
-        motor.setIdleMode(IdleMode.kBrake);
-        motor.setClosedLoopRampRate(1);
-        motor.setInverted(true);
+        motor.enableVoltageCompensation(drivetrainConstants.voltage_compensation);
+        motor.setSmartCurrentLimit(drivetrainConstants.stall_current_limit);
+        motor.setIdleMode(drivetrainConstants.default_mode);
+        motor.setClosedLoopRampRate(drivetrainConstants.ramp_rate);
+        motor.setInverted(drivetrainConstants.reverse_motor);
         motor.burnFlash();
     }
 

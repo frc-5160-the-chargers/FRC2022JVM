@@ -5,21 +5,19 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.NavX;
+import frc.robot.subsystems.Oi;
 import frc.robot.subsystems.Powertrain;
 
 public class ManualCurvatureDrive extends CommandBase{
+    private final Oi oi;
     private final Drivetrain drivetrain;
-    private final DoubleSupplier power;
-    private final DoubleSupplier rotation;
 
     public ManualCurvatureDrive(
-        Drivetrain drivetrain,
-        DoubleSupplier power_stick,
-        DoubleSupplier rotation_stick
+        Oi oi,
+        Drivetrain drivetrain
     ){
+        this.oi = oi;
         this.drivetrain = drivetrain;
-        this.power = power_stick;
-        this.rotation = rotation_stick;
     }
 
     @Override
@@ -28,7 +26,7 @@ public class ManualCurvatureDrive extends CommandBase{
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        drivetrain.curvatureDrive(power.getAsDouble(), rotation.getAsDouble());
+        drivetrain.curvatureDrive(oi.get_curvature_output()[1], oi.get_curvature_output()[0]);
     }
 
     // Called once the command ends or is interrupted.
