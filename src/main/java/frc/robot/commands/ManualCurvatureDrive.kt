@@ -8,7 +8,9 @@ class ManualCurvatureDrive(
     private val oi: OI,
     private val drivetrain: Drivetrain
 ) : CommandBase() {
-    override fun initialize() {}
+    init {
+        addRequirements(oi, drivetrain)
+    }
 
     // Called every time the scheduler runs while the command is scheduled.
     override fun execute() {
