@@ -2,18 +2,17 @@ package frc.robot.commands
 
 import edu.wpi.first.wpilibj2.command.CommandBase
 import frc.robot.subsystems.Drivetrain
-import java.util.function.DoubleSupplier
+import frc.robot.subsystems.OI
 
 class ManualCurvatureDrive(
-    private val drivetrain: Drivetrain,
-    private val power: DoubleSupplier,
-    private val rotation: DoubleSupplier
+    private val oi: OI,
+    private val drivetrain: Drivetrain
 ) : CommandBase() {
     override fun initialize() {}
 
     // Called every time the scheduler runs while the command is scheduled.
     override fun execute() {
-        drivetrain.curvatureDrive(power.asDouble, rotation.asDouble)
+        drivetrain.curvatureDrive(power = oi.curvatureOutput.y, rotation = oi.curvatureOutput.x)
     }
 
     // Called once the command ends or is interrupted.
@@ -22,5 +21,7 @@ class ManualCurvatureDrive(
     }
 
     // Returns true when the command should end.
-    override fun isFinished(): Boolean = false
+    override fun isFinished(): Boolean {
+        return false
+    }
 }

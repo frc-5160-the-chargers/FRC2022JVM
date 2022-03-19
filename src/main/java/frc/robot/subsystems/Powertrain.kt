@@ -1,11 +1,11 @@
 package frc.robot.subsystems
 
 import com.revrobotics.CANSparkMax
-import com.revrobotics.CANSparkMax.IdleMode
 import com.revrobotics.CANSparkMaxLowLevel
 import edu.wpi.first.wpilibj.drive.DifferentialDrive
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup
 import edu.wpi.first.wpilibj2.command.SubsystemBase
+import frc.robot.Constants.Drivetrain
 
 class Powertrain : SubsystemBase() {
     val left1 = CANSparkMax(1, CANSparkMaxLowLevel.MotorType.kBrushless)
@@ -31,12 +31,11 @@ class Powertrain : SubsystemBase() {
     }
 
     private fun configureSpark(motor: CANSparkMax) {
-        motor.enableVoltageCompensation(11.0)
-        motor.setSmartCurrentLimit(39)
-        motor.idleMode = IdleMode.kBrake
-        motor.closedLoopRampRate = 1.0
-        motor.inverted = true
-        motor.burnFlash()
+        motor.enableVoltageCompensation(Drivetrain.voltageCompensation)
+        motor.setSmartCurrentLimit(Drivetrain.stallCurrentLimit)
+        motor.idleMode = Drivetrain.defaultMode
+        motor.closedLoopRampRate = Drivetrain.rampRate
+        motor.inverted = Drivetrain.reverseMotor
     }
 
     fun reset() {
@@ -54,7 +53,8 @@ class Powertrain : SubsystemBase() {
 
     private fun setTankPowers(leftPower: Double, rightPower: Double) {
         rotation = 0.0
-        power = rotation
+        power = 0.0
+
         this.leftPower = leftPower
         this.rightPower = rightPower
     }
@@ -71,7 +71,7 @@ class Powertrain : SubsystemBase() {
 
     private fun setArcadePowers(power: Double, rotation: Double) {
         rightPower = 0.0
-        leftPower = rightPower
+        leftPower = 0.0
         this.power = power
         this.rotation = rotation
     }

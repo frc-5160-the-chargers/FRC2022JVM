@@ -3,6 +3,7 @@ package frc.robot.subsystems
 import edu.wpi.first.wpilibj.XboxController
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.utils.Point
+import frc.robot.utils.scaleBetweenRanges
 import kotlin.math.abs
 import kotlin.math.withSign
 
@@ -12,69 +13,49 @@ private const val maxMotorPower = .4
 private const val turboModePower = .57
 
 class OI : SubsystemBase() {
-    var driver_controller = XboxController(0)
-    var operator_controller = XboxController(1)
+    var driverController = XboxController(0)
+    var operatorController = XboxController(1)
 
-    private fun deadzone(i: Double, dz: Double): Double {
-        return if (abs(i) <= dz) {
-            0.0
-        } else {
-            i
-        }
-    }
+    private fun deadzone(i: Double, dz: Double): Double = if (abs(i) <= dz) 0.0 else i
 
-    fun readyStraightAssist(): Boolean {
-        val output = getRawOutput()
-        return output.x <= rotationAssistDeadband
-    }
+    val readyStraightAssist: Boolean get() = rawOutput.x <= rotationAssistDeadband
 
-    fun getRawOutput(): Point {
-        val x = driver_controller.rightX
-        val y = driver_controller.leftY
+    val rawOutput: Point get() {
+        val x = driverController.rightX
+        val y = driverController.leftY
         return Point(x, -y)
     }
 
-    fun getCurvatureOutput(): Point {
-        val output = getRawOutput()
-        val x = -abs(deadzone(output.x, driverDeadband)).withSign(output.x)
-        var y = abs(deadzone(output.y, driverDeadband)).withSign(output.y)
-        if (getBeastMode()) {
+    val curvatureOutput: Point get() {
+        val output = rawOutput
+        val x: Double = -abs(deadzone(output.x, driverDeadband)).withSign(output.x)
+        var y: Double = abs(deadzone(output.y, driverDeadband)).withSign(output.y)
+        if (beastMode) {
             y *= -1.0
         }
         return Point(x, y)
     }
 
-    fun getBeastMode(): Boolean {
-        return driver_controller.bButton
+    val beastMode: Boolean by driverController::bButton
+    val updatePidDash: Boolean by driverController::xButtonPressed
+    val togglePidTypePressed: Boolean by driverController::backButtonPressed
+    val enablePid: Boolean by driverController::aButtonPressed
+    val manualControlOverride: Boolean by driverController::bButtonPressed
+    val updateTelemetry: Boolean by driverController::yButtonPressed
+    val turboModeModifier: Double by driverController::rightTriggerAxis
+
+    fun processTurboMode(): Double {
+        val modifier: Double = turboModeModifier
+        return modifier.scaleBetweenRanges(0.0..1.0, maxMotorPower..turboModePower)
     }
 
-    fun getUpdatePidDash(): Boolean {
-        return driver_controller.xButtonPressed
-    }
-
-    fun getTogglePidTypePressed(): Boolean {
-        return driver_controller.backButtonPressed
-    }
-
-    fun getEnablePid(): Boolean {
-        return driver_controller.aButtonPressed
-    }
-
-    fun getManualControlOverride(): Boolean {
-        return driver_controller.bButtonPressed
-    }
-
-    fun getUpdateTelemetry(): Boolean {
-        return driver_controller.yButtonPressed
-    }
-
-    fun getTurboModeModifier(): Double {
-        return driver_controller.rightTriggerAxis
-    }
-
-    // public double process_turbo_mode(){
-    //     double modifier = get_turbo_mode_modifier();
-    //     double x = map_value(modifier, 0, 1, max_motor_power, turbo_mode_power);
-    //     return x;
-    // }
+    //Operator
+    val intakeOuttake: Boolean by operatorController::aButton
+    val intakeIntake: Boolean by operatorController::bButton
+    val intakeRaise: Boolean by operatorController::rightBumperPressed
+    val intakeLower: Boolean by operatorController::leftBumperPressed
+    val climberRaise: Boolean by operatorController::xButton
+    val climberClimb: Boolean by operatorController::yButton
+    val positionControl: Boolean by operatorController::backButtonPressed
+    val rotationControl: Boolean by operatorController::startButtonPressed
 }
