@@ -13,8 +13,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.revrobotics.RelativeEncoder;
 
-import frc.robot.Constants.drivetrainConstants;
-
 import static frc.robot.subsystems.Drivetrain.State.*;
 
 public class Drivetrain extends SubsystemBase {

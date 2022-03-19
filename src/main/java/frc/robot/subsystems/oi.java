@@ -96,11 +96,11 @@ public class Oi extends SubsystemBase{
         return operator_controller.getLeftBumperPressed();
     }
 
-    public boolean get_climber_raise(){
+    public boolean get_shooter_spinup(){
         return operator_controller.getXButton();
     }
-    
-    public boolean get_climber_climb(){
+
+    public boolean get_shooter_fire(){
         return operator_controller.getYButton();
     }
 

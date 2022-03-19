@@ -1,19 +1,16 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.IntakeRoller;
 import frc.robot.subsystems.Oi;
 
-public class ManualCurvatureDrive extends CommandBase{
+public class IntakeRollerStop extends CommandBase{
     private final Oi oi;
-    private final Drivetrain drivetrain;
-
-    public ManualCurvatureDrive(
-        Oi oi,
-        Drivetrain drivetrain
-    ){
+    private final IntakeRoller roller;
+    
+    public IntakeRollerStop(Oi oi, IntakeRoller roller){
         this.oi = oi;
-        this.drivetrain = drivetrain;
+        this.roller = roller;
     }
 
     @Override
@@ -22,13 +19,13 @@ public class ManualCurvatureDrive extends CommandBase{
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        drivetrain.curvatureDrive(oi.get_curvature_output()[1], oi.get_curvature_output()[0]);
+        roller.stop();
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        drivetrain.state = Drivetrain.State.STOPPED;
+        roller.stop();
     }
 
     // Returns true when the command should end.
