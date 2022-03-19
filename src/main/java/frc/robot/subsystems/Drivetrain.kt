@@ -136,9 +136,7 @@ class Drivetrain(
 
     override fun periodic() {
         pidControllerGroup.executeAll()
-        if (powertrain.mode == Powertrain.Mode.ARCADE_DRIVE) {
-            powertrain.setArcadePowers(power, rotation)
-        }
+        powertrain.periodic()
     }
 
     enum class State(val value: Int) {

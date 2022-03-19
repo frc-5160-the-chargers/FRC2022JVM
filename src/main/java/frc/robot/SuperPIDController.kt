@@ -2,7 +2,8 @@ package frc.robot
 
 import edu.wpi.first.math.controller.PIDController
 import frc.robot.utils.PIDConstants
-import frc.robot.utils.SmartDashboardUtils
+import frc.robot.utils.getPID
+import frc.robot.utils.putPID
 import frc.robot.utils.setConstants
 import kotlin.math.abs
 
@@ -59,7 +60,7 @@ class SuperPIDController(
      */
     fun maybeSetConstantsFromDash() {
         dashPidKey?.let { key ->
-            pidConstants = SmartDashboardUtils.getPID(key)
+            pidConstants = getPID(key)
         } // TODO: Should it really do nothing if the pidKey is unset?
     }
 
@@ -68,7 +69,7 @@ class SuperPIDController(
      */
     fun maybePutConstantsToDash() {
         dashPidKey?.let { key ->
-            SmartDashboardUtils.putPID(key, pidConstants)
+            putPID(key, pidConstants)
         }
     }
 
