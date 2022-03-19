@@ -3,12 +3,12 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.intakeConstants;
+import frc.robot.Constants.intakeRollerConstants;
 
 import static frc.robot.subsystems.IntakeRoller.State.*;
 
 public class IntakeRoller extends SubsystemBase {
-    private final WPI_TalonSRX intakeMotor = new WPI_TalonSRX(intakeConstants.motorPort);
+    private final WPI_TalonSRX intakeMotor = new WPI_TalonSRX(intakeRollerConstants.motorPort);
 
     public State state;
 
@@ -32,9 +32,9 @@ public class IntakeRoller extends SubsystemBase {
     public void periodic(){
         switch (state){
             case INTAKING:
-                intakeMotor.set(intakeConstants.controlMode, intakeConstants.rollerPower);
+                intakeMotor.set(intakeRollerConstants.controlMode, intakeRollerConstants.rollerPower);
             case OUTTAKING:
-                intakeMotor.set(intakeConstants.controlMode, -intakeConstants.rollerPower);
+                intakeMotor.set(intakeRollerConstants.controlMode, -intakeRollerConstants.rollerPower);
             case STOPPED:
                 intakeMotor.stopMotor();
         }
