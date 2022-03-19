@@ -47,4 +47,14 @@ public final class Constants {
         public static final double gear_ratio = (1/10.71);
         public static final double wheel_diameter = 6;
     }
+
+    public static final  class oiConstants{
+        public static final double driver_deadband = .05;
+        public static final double drivetrain_rotation_assist_deadband = .05;
+
+        public static final double lift_deadband = .05;
+        public static final double climb_deadband = .1;
+
+        public static final double color_wheel_deadband = .1;
+    }
 }

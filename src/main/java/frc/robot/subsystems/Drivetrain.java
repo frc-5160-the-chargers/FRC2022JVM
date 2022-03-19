@@ -39,8 +39,8 @@ public class Drivetrain extends SubsystemBase {
         encoderLeft = powertrain.left1.getEncoder();
         encoderRight = powertrain.right1.getEncoder();
 
-        final DoubleSupplier turnInput = this::getDistance;
-        final DoubleConsumer turnOutput = x -> { rotation=x; powertrain.mode=Powertrain.Mode.ARCADE_DRIVE; };
+        final DoubleSupplier turnInput = () -> { return navx.get_heading(); };
+        final DoubleConsumer turnOutput = x -> { rotation=x; };
         final BiFunction<Double, Double, Double> turnFeedfowards = (target, error) -> 0.0;
         final Range turnOutputRange = new Range(-drivetrainConstants.max_motor_power, drivetrainConstants.max_motor_power);
         turnPid = new SuperPIDController.Builder(drivetrainConstants.turn_pid, turnInput, turnOutput)
@@ -51,7 +51,7 @@ public class Drivetrain extends SubsystemBase {
             .build();
 
         final DoubleSupplier positionInput = this::getDistance;
-        final DoubleConsumer positionOutput = x -> {power=x; powertrain.mode=Powertrain.Mode.ARCADE_DRIVE; };
+        final DoubleConsumer positionOutput = x -> {power=x;};
         final BiFunction<Double, Double, Double> positionFeedfowards = (target, error) -> 0.0;
         final Range positionOutputRange = new Range(-drivetrainConstants.max_motor_power, drivetrainConstants.max_motor_power);
         positionPid = new SuperPIDController.Builder(drivetrainConstants.position_pid, positionInput, positionOutput)
@@ -146,7 +146,7 @@ public class Drivetrain extends SubsystemBase {
     public void periodic(){
         pidControllerGroup.executeAll();
         if (powertrain.mode == Powertrain.Mode.ARCADE_DRIVE){
-            powertrain.setArcadePowers(power, rotation);
+            powertrain.arcadeDrive(power, rotation);
         }
     }
 

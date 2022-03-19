@@ -2,6 +2,8 @@ package frc.robot.subsystems;
 
 import frc.robot.utils.Range;
 import frc.robot.utils.Utils;
+import frc.robot.Constants.oiConstants;
+import frc.robot.Constants.drivetrainConstants;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -9,11 +11,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Oi extends SubsystemBase{
     XboxController driver_controller = new XboxController(0);
     XboxController operator_controller = new XboxController(1);
-
-    private double rotation_assist_deadband = .05;
-    private double driver_deadband = .05;
-    private double max_motor_power = .4;
-    private double turbo_mode_power = .57;
 
     private double deadzone(double i, double dz){
         if (Math.abs(i) <= dz){
@@ -28,7 +25,7 @@ public class Oi extends SubsystemBase{
 
     public boolean ready_straight_assist(){
         double[] output = get_raw_output();
-        return (output[0] <= rotation_assist_deadband);
+        return (output[0] <= oiConstants.drivetrain_rotation_assist_deadband);
     }
 
     public double[] get_raw_output(){
@@ -39,8 +36,8 @@ public class Oi extends SubsystemBase{
 
     public double[] get_curvature_output(){
         double[] output = get_raw_output();
-        double x = -Math.copySign(Math.abs(deadzone(output[0], driver_deadband)), output[0]);
-        double y = Math.copySign(Math.abs(deadzone(output[1], driver_deadband)), output[1]);
+        double x = -Math.copySign(Math.abs(deadzone(output[0], oiConstants.driver_deadband)), output[0]);
+        double y = Math.copySign(Math.abs(deadzone(output[1], oiConstants.driver_deadband)), output[1]);
         if (get_beast_mode()){
             y *= -1;
         }
@@ -77,7 +74,7 @@ public class Oi extends SubsystemBase{
 
     public double process_turbo_mode(){
         double modifier = get_turbo_mode_modifier();
-        double x = Utils.mapValueInRange(modifier, new Range(0,1), new Range(max_motor_power, turbo_mode_power));
+        double x = Utils.mapValueInRange(modifier, new Range(0,1), new Range(drivetrainConstants.max_motor_power, drivetrainConstants.turbo_mode_power));
         return x;   
     }
 

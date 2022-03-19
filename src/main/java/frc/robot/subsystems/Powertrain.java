@@ -57,7 +57,7 @@ public class Powertrain extends SubsystemBase {
         rightPower = 0;
     }
 
-    public void setTankPowers(double left_power, double right_power) {
+    private void setTankPowers(double left_power, double right_power) {
         mode = TANK_DRIVE;
         power = rotation = 0;
 
@@ -65,7 +65,7 @@ public class Powertrain extends SubsystemBase {
         this.rightPower = right_power;
     }
     
-    public void setArcadePowers(double power, double rotation) {
+    private void setArcadePowers(double power, double rotation) {
         mode = ARCADE_DRIVE;
         leftPower = rightPower = 0;
 
