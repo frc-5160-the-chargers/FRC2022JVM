@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.kauailabs.navx.frc.AHRS;
 
-public class NavX extends SubsystemBase{
+public class NavX extends SubsystemBase {
     private final AHRS navx = new AHRS();
 
     public NavX(){
@@ -15,14 +15,11 @@ public class NavX extends SubsystemBase{
         navx.reset();
     }
 
-    public double get_heading(){ //in degrees
+    public double getHeading(){ //in degrees
         return navx.getAngle();
     }
 
-    public boolean is_connected(){
+    public boolean isConnected(){
         return navx.isConnected();
     }
-
-    @Override
-    public void periodic() {}
 }

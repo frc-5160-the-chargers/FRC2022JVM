@@ -1,19 +1,15 @@
 package frc.robot.commands;
 
-import java.util.function.DoubleSupplier;
-
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.NavX;
-import frc.robot.subsystems.Oi;
-import frc.robot.subsystems.Powertrain;
+import frc.robot.subsystems.OI;
 
 public class ManualCurvatureDrive extends CommandBase{
-    private final Oi oi;
+    private final OI oi;
     private final Drivetrain drivetrain;
 
     public ManualCurvatureDrive(
-        Oi oi,
+        OI oi,
         Drivetrain drivetrain
     ){
         this.oi = oi;
@@ -32,7 +28,7 @@ public class ManualCurvatureDrive extends CommandBase{
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        drivetrain.state = Drivetrain.State.STOPPED;
+        drivetrain.stop();
     }
 
     // Returns true when the command should end.

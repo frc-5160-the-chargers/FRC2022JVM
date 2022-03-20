@@ -1,6 +1,7 @@
 package frc.robot.utils;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.pid.PIDConstants;
 
 /**
  * A utility class providing various extensions to the {@link SmartDashboard} class.

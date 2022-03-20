@@ -4,7 +4,7 @@
 
 package frc.robot;
 
-import frc.robot.utils.PIDConstants;
+import frc.robot.pid.PIDConstants;
 
 import com.revrobotics.CANSparkMax.IdleMode;
 

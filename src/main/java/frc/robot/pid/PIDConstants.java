@@ -1,4 +1,4 @@
-package frc.robot.utils;
+package frc.robot.pid;
 
 import edu.wpi.first.math.controller.PIDController;
 
@@ -26,9 +26,20 @@ public class PIDConstants {
     }
 
     /**
+     * Gets the {@link PIDConstants} of an existing {@link PIDController}
+     */
+    public static PIDConstants getControllerConstants(PIDController pidController) {
+        return new PIDConstants(
+            pidController.getP(),
+            pidController.getI(),
+            pidController.getD()
+        );
+    }
+
+    /**
      * Applies the values of a {@link PIDConstants} object to an existing {@link PIDController}.
      */
-    public static void updateController(PIDController controller, PIDConstants pidConstants) {
+    public static void setControllerConstants(PIDController controller, PIDConstants pidConstants) {
         controller.setPID(pidConstants.kP, pidConstants.kI, pidConstants.kD);
     }
 }
