@@ -31,7 +31,10 @@ public class OI extends SubsystemBase{
     public double[] get_raw_output(){
         double x = driver_controller.getRightX();
         double y = driver_controller.getLeftY();
-        return new double[]{x, -y};
+        return new double[]{
+            x,
+            -y // Moving the controller to the left gives a negative number, but should represent a positive (clockwise) rotation
+        };
     }
 
     public double[] get_curvature_output(){

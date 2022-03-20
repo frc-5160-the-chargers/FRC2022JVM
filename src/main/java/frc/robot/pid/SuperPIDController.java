@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.utils.Range;
 
 import java.util.Objects;
-import java.util.function.BiFunction;
 import java.util.function.DoubleSupplier;
 
 import static frc.robot.utils.Utils.clamp;
@@ -23,9 +22,9 @@ public class SuperPIDController {
     private final DoubleSupplier input;
     private final double tolerance;
     private final Range outputRange;
-    private final BiFunction<Double, Double, Double> feedForward;
+    private final FeedForward feedForward;
 
-    static private final BiFunction<Double, Double, Double> DEFAULT_FEED_FORWARD = (target, error) -> 0.0;
+    static private final FeedForward DEFAULT_FEED_FORWARD = (target, error) -> 0.0;
     static private final double DEFAULT_TOLERANCE = 1.0;
 
     private final PIDController pidController = new PIDController(0, 0, 0);
@@ -44,7 +43,7 @@ public class SuperPIDController {
     }
 
     private double applyFeedforward(double pidOutput) {
-        return pidOutput + feedForward.apply(getTarget(), pidOutput);
+        return pidOutput + feedForward.calculateFeedForward(getTarget(), pidOutput);
     }
 
     private double ensureInOutputRange(double output) {
@@ -102,7 +101,7 @@ public class SuperPIDController {
         final DoubleSupplier input,
         final Range outputRange,
         final Double tolerance,
-        final BiFunction<Double, Double, Double> feedForward,
+        final FeedForward feedForward,
         final double target
     ) {
         this.input = input;
@@ -123,7 +122,7 @@ public class SuperPIDController {
         private final DoubleSupplier input;
         private final Range outputRange;
         private Double tolerance;
-        private BiFunction<Double, Double, Double> feedForward;
+        private FeedForward feedForward;
         private double target;
 
         public Builder(
@@ -141,7 +140,7 @@ public class SuperPIDController {
             return this;
         }
 
-        public Builder feedForward(final BiFunction<Double, Double, Double> feedForward) {
+        public Builder feedForward(final FeedForward feedForward) {
             this.feedForward = feedForward;
             return this;
         }
