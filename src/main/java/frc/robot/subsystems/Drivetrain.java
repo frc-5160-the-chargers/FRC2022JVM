@@ -38,7 +38,7 @@ public class Drivetrain extends SubsystemBase {
         motor.setInverted(Constants.drivetrainConstants.reverse_motor);
         motor.burnFlash();
     }
-    
+
     public void tankDrive(final double leftPower, final double rightPower) {
         differentialDrive.tankDrive(leftPower, rightPower, false);
     }

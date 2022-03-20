@@ -6,6 +6,7 @@ package frc.robot;
 
 import frc.robot.pid.PIDConstants;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.revrobotics.CANSparkMax.IdleMode;
 
 /**
@@ -48,7 +49,7 @@ public final class Constants {
         public static final double wheel_diameter = 6;
     }
 
-    public static final  class oiConstants{
+    public static final class oiConstants{
         public static final double driver_deadband = .05;
         public static final double drivetrain_rotation_assist_deadband = .05;
 
@@ -57,4 +58,32 @@ public final class Constants {
 
         public static final double color_wheel_deadband = .1;
     }
+    public static final class intakeRollerConstants{
+        public static final int motorPort = 5;
+
+        public static final double rollerPower = .95;
+        public static final ControlMode controlMode = ControlMode.PercentOutput;
+    }
+
+    public static final class intakeArmConstants{
+        public static final int motor_port = 6;
+        public static final double max_power = .25;
+        public static final double min_power = -.15;
+            
+        public static final double voltage_compensation=11;
+        public static final int stall_current_limit=39;
+        public static final IdleMode default_mode=IdleMode.kBrake;
+        public static final double ramp_rate=1;
+        public static final boolean reverse_motor=true;
+
+        public static final PIDConstants pid_values = new PIDConstants(0.5, 0, 0.005);
+        public static final String pid_key = "Intake Lift PID";
+        public static final double tolerance = 0;
+
+        public static final double up_position = (21*Math.PI)/48;
+        public static final double down_position = -Math.PI/24;
+
+        public static final double gear_ratio = (1/96);
+    }
+    
 }
