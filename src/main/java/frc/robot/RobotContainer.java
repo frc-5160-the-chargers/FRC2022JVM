@@ -7,11 +7,12 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
+import frc.robot.Constants.intakeArmConstants;
 import frc.robot.commands.DoNothing;
-import frc.robot.commands.LowerAndHoldIntake;
 import frc.robot.commands.LowerIntake;
-import frc.robot.commands.RaiseAndHoldIntake;
+import frc.robot.commands.ToggleShooter;
 import frc.robot.subsystems.*;
+import frc.robot.utils.*;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -30,6 +31,8 @@ public class RobotContainer {
     private final Drivetrain drivetrain = new Drivetrain();
     private final IntakeRoller roller = new IntakeRoller();
     private final IntakeArm arm = new IntakeArm();
+    private final Shooter shooter = new Shooter();
+    private final Serializer serializer = new Serializer();
 
     XboxController driver_controller = new XboxController(0);
     XboxController operator_controller = new XboxController(1);
@@ -52,7 +55,15 @@ public class RobotContainer {
             new RunCommand(roller::stop, roller)
         );
 
-        arm.setDefaultCommand(new LowerAndHoldIntake(arm));
+        arm.setDefaultCommand(new InstantCommand(
+            () -> 
+                arm.setTargetPosition(intakeArmConstants.down_position), 
+            arm)
+        );
+
+        shooter.setDefaultCommand(new InstantCommand(shooter::disable, shooter));
+
+        serializer.setDefaultCommand(new InstantCommand(serializer::disable, serializer));
 
     }
 
@@ -71,7 +82,13 @@ public class RobotContainer {
         new JoystickButton(operator_controller, Button.kLeftBumper.value)
             .whenPressed(new LowerIntake(arm));
         new JoystickButton(operator_controller, Button.kRightBumper.value)
-            .whenPressed(new RaiseAndHoldIntake(arm));
+            .whenPressed(new InstantCommand(() -> arm.setTargetPosition(intakeArmConstants.down_position), arm));
+        
+        new JoystickButton(operator_controller, Button.kX.value)
+            .whenPressed(new ToggleShooter(shooter));
+        
+        new JoystickButton(operator_controller, Button.kY.value)
+            .whileHeld(new InstantCommand(serializer::enable, serializer));
     }
 
     /**

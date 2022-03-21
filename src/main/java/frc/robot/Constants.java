@@ -85,5 +85,16 @@ public final class Constants {
 
         public static final double gear_ratio = (1/96);
     }
+
+    public static final class shooterConstants{
+        public static final int motorPort = 7;
+        public static final double enablePower = 0.95;
+    }
+
+    public static final class serializerConstants{
+        public static final int motorPort1 = 8;
+        public static final int motorPort2 = 9;
+        public static final double enablePower = 0.25;
+    }
     
 }
