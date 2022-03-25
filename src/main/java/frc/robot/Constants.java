@@ -82,13 +82,14 @@ public final class Constants {
 
         public static final double up_position = (21*Math.PI)/48;
         public static final double down_position = -Math.PI/24;
+        public static final double maxSafePositionToDrop = 0.0;
 
-        public static final double gear_ratio = (1/96.0);
+        public static final double gear_ratio = (1/27.0);
     }
 
     public static final class shooterConstants{
         public static final int motorPort = 7;
-        public static final double enablePower = 0.95;
+        public static final double enablePower = 0.6;
     }
 
     public static final class serializerConstants{
@@ -101,9 +102,13 @@ public final class Constants {
         public static final int[] motorPorts = {10, 11}; // TODO: Set to actual values
         public static final double gearRatio = 0.2;
         public static final IdleMode defaultMotorMode = IdleMode.kBrake;
+        public static final double winchDiameter = 0.75;
+        public static final double winchActuationDistanceInches = 66; // TODO: Actual value less; measure when winch actually mounted
+        public static final double precisionAreaSizeInches = 8;
 
         // TODO: May need to tune any of the following
         public static final double motorRunSpeed = 0.5;
+        public static final double precisionSpeed = 0.2;
         public static final PIDConstants holdPIDValues = new PIDConstants(0.5, 0.0, 0.01);
         public static final double maxMotorHoldPower = 0.75;
         public static final double holdFeedForwardFactor = 0.1; // This may have to be negative

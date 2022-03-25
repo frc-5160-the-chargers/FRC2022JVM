@@ -7,8 +7,6 @@ import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.pid.SuperPIDController;
-import frc.robot.utils.Range;
 import frc.robot.utils.Utils;
 
 import static frc.robot.Constants.climberConstants.*;
@@ -63,6 +61,12 @@ public class Climber extends SubsystemBase {
         double radians = rotations_adjusted*2*Math.PI;
 
         return radians;
+    }
+
+    public double getPosition() {
+        double rotations = getAngularPosition();
+        double distance = rotations*(Constants.climberConstants.winchDiameter/2);
+        return distance;
     }
 }
 

@@ -7,7 +7,10 @@ import static frc.robot.Constants.intakeArmConstants.down_position;
 
 /**
  * A command that lowers the arm in a controlled way until it gets close enough to the lowered position, at which point it disables the motors and lets the arm fall.
+ *
+ * @deprecated Use {@link IntakeArm#drop()} instead.
  */
+@Deprecated()
 public class LowerIntake extends CommandBase {
     private final IntakeArm intakeArm;
     private static final double DISTANCE_FROM_LOWERED_POSITION_TO_DROP = 0.2;

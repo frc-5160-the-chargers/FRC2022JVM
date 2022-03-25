@@ -12,10 +12,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.intakeArmConstants;
-import frc.robot.commands.DoNothing;
-import frc.robot.commands.HoldClimber;
-import frc.robot.commands.LowerIntake;
-import frc.robot.commands.ToggleShooter;
+import frc.robot.commands.*;
 import frc.robot.subsystems.*;
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -51,15 +48,9 @@ public class RobotContainer {
             )
         );
 
-        roller.setDefaultCommand(
-            new RunCommand(roller::stop, roller)
-        );
+        roller.setDefaultCommand(new RunCommand(roller::stop, roller));
 
-        arm.setDefaultCommand(new InstantCommand(
-            () -> 
-                arm.setTargetPosition(intakeArmConstants.down_position), 
-            arm)
-        );
+        arm.setDefaultCommand(new InstantCommand(arm::drop, arm));
 
         shooter.setDefaultCommand(new InstantCommand(shooter::disable, shooter));
 
@@ -81,7 +72,8 @@ public class RobotContainer {
             .whileHeld(new InstantCommand(roller::intake, roller));
 
         new JoystickButton(operator_controller, Button.kLeftBumper.value)
-            .whenPressed(new LowerIntake(arm));
+            .whenPressed(new InstantCommand(arm::drop, arm));
+
         new JoystickButton(operator_controller, Button.kRightBumper.value)
             .whenPressed(new InstantCommand(() -> arm.setTargetPosition(intakeArmConstants.down_position), arm));
         
@@ -91,11 +83,17 @@ public class RobotContainer {
         new JoystickButton(operator_controller, Button.kY.value)
             .whileHeld(new InstantCommand(serializer::enable, serializer));
 
-//        new JoystickButton(operator_controller, Button.kLeftStick.value) // TODO: Uncomment IF spinning the motor the reverse direction is necessary
-//            .whileHeld(new InstantCommand(climber::runBackwards, climber));
+        new JoystickButton(operator_controller, XboxController.Axis.kLeftTrigger.value)
+            .whileHeld(new InstantCommand(climber::runBackwards, climber));
 
-        new JoystickButton(operator_controller, Button.kRightStick.value)
+        new JoystickButton(operator_controller, XboxController.Axis.kRightTrigger.value)
             .whileHeld(new InstantCommand(climber::runForwards, climber));
+
+//        new JoystickButton(operator_controller, XboxController.Axis.kLeftTrigger.value) // TODO: Uncomment to use Variable Precision climbing
+//            .whileHeld(new VariablePrecisionClimber(VariablePrecisionClimber.Direction.BACKWARDS, climber));
+//
+//        new JoystickButton(operator_controller, XboxController.Axis.kRightTrigger.value)
+//            .whileHeld(new VariablePrecisionClimber(VariablePrecisionClimber.Direction.FORWARDS, climber));
     }
 
     /**
