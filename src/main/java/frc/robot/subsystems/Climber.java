@@ -7,8 +7,6 @@ import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.pid.SuperPIDController;
-import frc.robot.utils.Range;
 import frc.robot.utils.Utils;
 
 import static frc.robot.Constants.climberConstants.*;

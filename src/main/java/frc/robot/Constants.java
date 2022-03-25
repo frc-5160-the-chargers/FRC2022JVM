@@ -93,12 +93,11 @@ public final class Constants {
 
     public static final class serializerConstants{
         public static final int motorPort1 = 8;
-        public static final int motorPort2 = 9;
         public static final double enablePower = 0.25;
     }
 
     public static final class climberConstants {
-        public static final int[] motorPorts = {10, 11}; // TODO: Set to actual values
+        public static final int[] motorPorts = {9, 10}; // TODO: Set to actual values
         public static final double gearRatio = 0.2;
         public static final IdleMode defaultMotorMode = IdleMode.kBrake;
 

@@ -91,9 +91,8 @@ public class RobotContainer {
         new JoystickButton(operator_controller, Button.kY.value)
             .whileHeld(new InstantCommand(serializer::enable, serializer));
 
-//        new JoystickButton(operator_controller, Button.kLeftStick.value) // TODO: Uncomment IF spinning the motor the reverse direction is necessary
-//            .whileHeld(new InstantCommand(climber::runBackwards, climber));
-
+        new JoystickButton(operator_controller, Button.kLeftStick.value) // TODO: Comment IF spinning the motor the reverse direction is not necessary
+            .whileHeld(new InstantCommand(climber::runBackwards, climber));
         new JoystickButton(operator_controller, Button.kRightStick.value)
             .whileHeld(new InstantCommand(climber::runForwards, climber));
     }

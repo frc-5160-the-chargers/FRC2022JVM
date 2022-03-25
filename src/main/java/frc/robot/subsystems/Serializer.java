@@ -9,14 +9,12 @@ import static frc.robot.subsystems.Serializer.State.*;
 
 public class Serializer extends SubsystemBase {
     private final WPI_TalonSRX serializerMotor1;
-    private final WPI_TalonSRX serializerMotor2;
 
     private double power;
     private State state;
 
     public Serializer(){
         serializerMotor1 = new WPI_TalonSRX(serializerConstants.motorPort1);
-        serializerMotor2 = new WPI_TalonSRX(serializerConstants.motorPort2);
         state = DISABLED;
     }
 
@@ -47,7 +45,6 @@ public class Serializer extends SubsystemBase {
                 power = 0;
         }
         serializerMotor1.set(power);
-        serializerMotor2.set(power);
     }
     
     enum State {

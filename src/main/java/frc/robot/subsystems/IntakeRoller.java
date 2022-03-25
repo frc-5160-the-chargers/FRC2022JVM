@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.intakeRollerConstants;
@@ -8,7 +10,7 @@ import frc.robot.Constants.intakeRollerConstants;
 import static frc.robot.subsystems.IntakeRoller.State.*;
 
 public class IntakeRoller extends SubsystemBase {
-    private final WPI_TalonSRX intakeMotor = new WPI_TalonSRX(intakeRollerConstants.motorPort);
+    private final CANSparkMax intakeMotor = new CANSparkMax(intakeRollerConstants.motorPort, MotorType.kBrushed);
 
     public State state;
 
@@ -32,9 +34,9 @@ public class IntakeRoller extends SubsystemBase {
     public void periodic(){
         switch (state){
             case INTAKING:
-                intakeMotor.set(intakeRollerConstants.controlMode, intakeRollerConstants.rollerPower);
+                intakeMotor.set(intakeRollerConstants.rollerPower);
             case OUTTAKING:
-                intakeMotor.set(intakeRollerConstants.controlMode, -intakeRollerConstants.rollerPower);
+                intakeMotor.set(-intakeRollerConstants.rollerPower);
             case STOPPED:
                 intakeMotor.stopMotor();
         }
