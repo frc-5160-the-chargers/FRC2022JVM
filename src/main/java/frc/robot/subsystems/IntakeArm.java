@@ -4,6 +4,8 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.intakeArmConstants;
 import frc.robot.pid.SuperPIDController;
@@ -109,6 +111,8 @@ public class IntakeArm extends SubsystemBase {
                 armMotor.stopMotor();
                 break;
         }
+
+        SmartDashboard.putNumber("Intake Arm Encoder Position", armEncoder.getPosition());
     }
 
     private enum State {
