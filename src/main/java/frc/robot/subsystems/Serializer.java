@@ -9,14 +9,12 @@ import static frc.robot.subsystems.Serializer.State.*;
 
 public class Serializer extends SubsystemBase {
     private final WPI_TalonSRX serializerMotor1;
-    private final WPI_TalonSRX serializerMotor2;
 
     private double power;
     private State state;
 
     public Serializer(){
         serializerMotor1 = new WPI_TalonSRX(serializerConstants.motorPort1);
-        serializerMotor2 = new WPI_TalonSRX(serializerConstants.motorPort2);
         state = DISABLED;
     }
 
@@ -25,8 +23,12 @@ public class Serializer extends SubsystemBase {
         disable();
     }
 
-    public void enable(){
-        state = ENABLED;
+    public void runForward(){
+        state = FORWARD;
+    }
+
+    public void runReverse(){
+        state = REVERSE;
     }
     
     public void disable(){
@@ -34,25 +36,27 @@ public class Serializer extends SubsystemBase {
     }
 
     public boolean isEnabled(){
-        if (state == ENABLED) { return true; }
+        if (state == FORWARD) { return true; }
         else { return false; }
     }
 
     @Override
     public void periodic(){
         switch (state){
-            case ENABLED:
+            case FORWARD:
                 power = serializerConstants.enablePower;
+            case REVERSE:
+                power = -serializerConstants.enablePower;
             case DISABLED:
                 power = 0;
         }
         serializerMotor1.set(power);
-        serializerMotor2.set(power);
     }
     
     enum State {
-        ENABLED(0),
-        DISABLED(1);
+        FORWARD(0),
+        REVERSE(1),
+        DISABLED(2);
 
         final int value;
         State(int value){

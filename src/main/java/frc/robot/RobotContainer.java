@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.Constants.controlBindings;
 import frc.robot.Constants.intakeArmConstants;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
@@ -66,22 +67,24 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        new JoystickButton(operator_controller, Button.kA.value)
+        new JoystickButton(operator_controller, controlBindings.outtake)
             .whileHeld(new InstantCommand(roller::outtake, roller));
-        new JoystickButton(operator_controller, Button.kB.value)
+        new JoystickButton(operator_controller, controlBindings.intake)
             .whileHeld(new InstantCommand(roller::intake, roller));
 
-        new JoystickButton(operator_controller, Button.kLeftBumper.value)
+        new JoystickButton(operator_controller, controlBindings.lowerArm)
             .whenPressed(new InstantCommand(arm::drop, arm));
 
-        new JoystickButton(operator_controller, Button.kRightBumper.value)
+        new JoystickButton(operator_controller, controlBindings.raiseArm)
             .whenPressed(new InstantCommand(() -> arm.setTargetPosition(intakeArmConstants.down_position), arm));
         
-        new JoystickButton(operator_controller, Button.kX.value)
+        new JoystickButton(operator_controller, controlBindings.toggleShooter)
             .whenPressed(new ToggleShooter(shooter));
         
-        new JoystickButton(operator_controller, Button.kY.value)
-            .whileHeld(new InstantCommand(serializer::enable, serializer));
+        new JoystickButton(operator_controller, controlBindings.runSerializerForward)
+            .whileHeld(new InstantCommand(serializer::runForward, serializer));
+        new JoystickButton(operator_controller, controlBindings.runSerializerReverse)
+            .whileHeld(new InstantCommand(serializer::runReverse, serializer));
 
         new JoystickButton(operator_controller, XboxController.Axis.kLeftTrigger.value)
             .whileHeld(new InstantCommand(climber::runBackwards, climber));
