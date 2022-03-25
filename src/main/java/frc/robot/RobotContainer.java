@@ -7,14 +7,13 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.controlBindings;
 import frc.robot.Constants.intakeArmConstants;
 import frc.robot.commands.DoNothing;
 //import frc.robot.commands.HoldClimber;
+import frc.robot.commands.Drive;
 import frc.robot.commands.LowerIntake;
 import frc.robot.commands.ToggleShooter;
 import frc.robot.subsystems.*;
@@ -62,7 +61,7 @@ public class RobotContainer {
 
         serializer.setDefaultCommand(new InstantCommand(serializer::disable, serializer));
 
-        climber.setDefaultCommand(new HoldClimber(climber));
+//        climber.setDefaultCommand(new HoldClimber(climber));
     }
 
     /**
@@ -91,11 +90,11 @@ public class RobotContainer {
         new JoystickButton(operator_controller, controlBindings.runSerializerReverse)
             .whileHeld(new InstantCommand(serializer::runReverse, serializer));
 
-        new JoystickButton(operator_controller, XboxController.Axis.kLeftTrigger.value)
-            .whileHeld(new InstantCommand(climber::runBackwards, climber));
-
-        new JoystickButton(operator_controller, XboxController.Axis.kRightTrigger.value)
-            .whileHeld(new InstantCommand(climber::runForwards, climber));
+//        new JoystickButton(operator_controller, XboxController.Axis.kLeftTrigger.value)
+//            .whileHeld(new InstantCommand(climber::runBackwards, climber));
+//
+//        new JoystickButton(operator_controller, XboxController.Axis.kRightTrigger.value)
+//            .whileHeld(new InstantCommand(climber::runForwards, climber));
 
 //        new JoystickButton(operator_controller, XboxController.Axis.kLeftTrigger.value) // TODO: Uncomment to use Variable Precision climbing
 //            .whileHeld(new VariablePrecisionClimber(VariablePrecisionClimber.Direction.BACKWARDS, climber));
@@ -110,6 +109,12 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        return new DoNothing();
+        return new SequentialCommandGroup(
+            new ParallelCommandGroup(
+                new RunCommand(serializer::runForward, serializer),
+                new RunCommand(shooter::enable, shooter)
+            ).withTimeout(10.0),
+            Drive.byDistance(24, drivetrain)
+        );
     }
 }
