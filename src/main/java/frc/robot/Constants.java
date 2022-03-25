@@ -95,16 +95,16 @@ public final class Constants {
         public static final String pid_key = "Intake Lift PID";
         public static final double tolerance = 0;
 
-        public static final double up_position = (21*Math.PI)/48;
-        public static final double down_position = -Math.PI/24;
+        public static final double up_position = 0;
+        public static final double down_position = -(21*Math.PI)/48;
         public static final double maxSafePositionToDrop = 0.0;
 
-        public static final double gear_ratio = (1/27.0);
+        public static final double gear_ratio = (1/96.0);
     }
 
     public static final class shooterConstants{
         public static final int motorPort = 7;
-        public static final double enablePower = 0.6;
+        public static final double enablePower = 0.95;
     }
 
     public static final class serializerConstants{

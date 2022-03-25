@@ -13,7 +13,10 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.controlBindings;
 import frc.robot.Constants.intakeArmConstants;
-import frc.robot.commands.*;
+import frc.robot.commands.DoNothing;
+//import frc.robot.commands.HoldClimber;
+import frc.robot.commands.LowerIntake;
+import frc.robot.commands.ToggleShooter;
 import frc.robot.subsystems.*;
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -30,7 +33,7 @@ public class RobotContainer {
     private final IntakeArm arm = new IntakeArm();
     private final Shooter shooter = new Shooter();
     private final Serializer serializer = new Serializer();
-    private final Climber climber = new Climber();
+    //private final Climber climber = new Climber();
 
     XboxController driver_controller = new XboxController(0);
     XboxController operator_controller = new XboxController(1);
@@ -49,7 +52,9 @@ public class RobotContainer {
             )
         );
 
-        roller.setDefaultCommand(new RunCommand(roller::stop, roller));
+        roller.setDefaultCommand(
+            new RunCommand(roller::stop, roller)
+        );
 
         arm.setDefaultCommand(new InstantCommand(arm::drop, arm));
 
