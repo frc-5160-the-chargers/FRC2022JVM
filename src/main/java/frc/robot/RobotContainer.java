@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.controlBindings;
 import frc.robot.Constants.intakeArmConstants;
 import frc.robot.commands.DoNothing;
-import frc.robot.commands.HoldClimber;
+//import frc.robot.commands.HoldClimber;
 import frc.robot.commands.LowerIntake;
 import frc.robot.commands.ToggleShooter;
 import frc.robot.subsystems.*;
@@ -33,7 +33,7 @@ public class RobotContainer {
     private final IntakeArm arm = new IntakeArm();
     private final Shooter shooter = new Shooter();
     private final Serializer serializer = new Serializer();
-    private final Climber climber = new Climber();
+    //private final Climber climber = new Climber();
 
     XboxController driver_controller = new XboxController(0);
     XboxController operator_controller = new XboxController(1);
@@ -56,17 +56,17 @@ public class RobotContainer {
             new RunCommand(roller::stop, roller)
         );
 
-        arm.setDefaultCommand(new InstantCommand(
+        arm.setDefaultCommand(new RunCommand(
             () -> 
-                arm.setTargetPosition(intakeArmConstants.down_position), 
+                arm.setTargetPosition(intakeArmConstants.up_position), 
             arm)
         );
 
-        shooter.setDefaultCommand(new InstantCommand(shooter::disable, shooter));
+        shooter.setDefaultCommand(new RunCommand(shooter::disable, shooter));
 
-        serializer.setDefaultCommand(new InstantCommand(serializer::disable, serializer));
+        serializer.setDefaultCommand(new RunCommand(serializer::disable, serializer));
 
-        climber.setDefaultCommand(new HoldClimber(climber));
+        //climber.setDefaultCommand(new HoldClimber(climber));
     }
 
     /**

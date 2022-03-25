@@ -14,6 +14,10 @@ public class IntakeRoller extends SubsystemBase {
 
     public State state;
 
+    public IntakeRoller(){
+        reset();
+    }
+
     public void reset(){
         state = STOPPED;
     }
