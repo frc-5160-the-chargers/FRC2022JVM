@@ -9,6 +9,8 @@ import frc.robot.pid.PIDConstants;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.revrobotics.CANSparkMax.IdleMode;
 
+import edu.wpi.first.wpilibj.XboxController.Button;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -18,6 +20,19 @@ import com.revrobotics.CANSparkMax.IdleMode;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+    public static final class controlBindings {
+        public static final int outtake = Button.kA.value;
+        public static final int intake = Button.kB.value;
+
+        public static final int lowerArm = Button.kLeftBumper.value;
+        public static final int raiseArm = Button.kRightBumper.value;
+
+        public static final int toggleShooter = Button.kX.value;
+
+        public static final int runSerializerForward = Button.kY.value;
+        public static final int runSerializerReverse = Button.kLeftStick.value;
+    }
+
     public static final class drivetrainConstants {
         public static final int[] motors_left = {1, 2};
         public static final int[] motors_right = {3, 4};

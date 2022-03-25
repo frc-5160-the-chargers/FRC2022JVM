@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.Constants.controlBindings;
 import frc.robot.Constants.intakeArmConstants;
 import frc.robot.commands.DoNothing;
 import frc.robot.commands.HoldClimber;
@@ -75,26 +76,28 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        new JoystickButton(operator_controller, Button.kA.value)
+        new JoystickButton(operator_controller, controlBindings.outtake)
             .whileHeld(new InstantCommand(roller::outtake, roller));
-        new JoystickButton(operator_controller, Button.kB.value)
+        new JoystickButton(operator_controller, controlBindings.intake)
             .whileHeld(new InstantCommand(roller::intake, roller));
 
-        new JoystickButton(operator_controller, Button.kLeftBumper.value)
+        new JoystickButton(operator_controller, controlBindings.lowerArm)
             .whenPressed(new LowerIntake(arm));
-        new JoystickButton(operator_controller, Button.kRightBumper.value)
-            .whenPressed(new InstantCommand(() -> arm.setTargetPosition(intakeArmConstants.down_position), arm));
+        new JoystickButton(operator_controller, controlBindings.raiseArm)
+            .whenPressed(new InstantCommand(() -> arm.setTargetPosition(intakeArmConstants.up_position), arm));
         
-        new JoystickButton(operator_controller, Button.kX.value)
+        new JoystickButton(operator_controller, controlBindings.toggleShooter)
             .whenPressed(new ToggleShooter(shooter));
         
-        new JoystickButton(operator_controller, Button.kY.value)
-            .whileHeld(new InstantCommand(serializer::enable, serializer));
+        new JoystickButton(operator_controller, controlBindings.runSerializerForward)
+            .whileHeld(new InstantCommand(serializer::runForward, serializer));
+        new JoystickButton(operator_controller, controlBindings.runSerializerReverse)
+            .whileHeld(new InstantCommand(serializer::runReverse, serializer));
 
-        new JoystickButton(operator_controller, Button.kLeftStick.value) // TODO: Comment IF spinning the motor the reverse direction is not necessary
-            .whileHeld(new InstantCommand(climber::runBackwards, climber));
-        new JoystickButton(operator_controller, Button.kRightStick.value)
-            .whileHeld(new InstantCommand(climber::runForwards, climber));
+        // new JoystickButton(operator_controller, Button.kLeftStick.value) // TODO: Comment IF spinning the motor the reverse direction is not necessary
+        //     .whileHeld(new InstantCommand(climber::runBackwards, climber));
+        // new JoystickButton(operator_controller, Button.kRightStick.value)
+        //     .whileHeld(new InstantCommand(climber::runForwards, climber));
     }
 
     /**

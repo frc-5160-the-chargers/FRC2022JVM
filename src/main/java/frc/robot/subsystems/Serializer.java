@@ -23,8 +23,12 @@ public class Serializer extends SubsystemBase {
         disable();
     }
 
-    public void enable(){
-        state = ENABLED;
+    public void runForward(){
+        state = FORWARD;
+    }
+
+    public void runReverse(){
+        state = REVERSE;
     }
     
     public void disable(){
@@ -32,15 +36,17 @@ public class Serializer extends SubsystemBase {
     }
 
     public boolean isEnabled(){
-        if (state == ENABLED) { return true; }
+        if (state == FORWARD) { return true; }
         else { return false; }
     }
 
     @Override
     public void periodic(){
         switch (state){
-            case ENABLED:
+            case FORWARD:
                 power = serializerConstants.enablePower;
+            case REVERSE:
+                power = -serializerConstants.enablePower;
             case DISABLED:
                 power = 0;
         }
@@ -48,8 +54,9 @@ public class Serializer extends SubsystemBase {
     }
     
     enum State {
-        ENABLED(0),
-        DISABLED(1);
+        FORWARD(0),
+        REVERSE(1),
+        DISABLED(2);
 
         final int value;
         State(int value){
