@@ -32,6 +32,8 @@ public class Drivetrain extends SubsystemBase {
         for (CANSparkMax motor : motors) {
             configureSpark(motor);
         }
+
+//        rightMotors.setInverted(true); // TODO: Uncomment if necessary
     }
 
     private void configureSpark(CANSparkMax motor) {

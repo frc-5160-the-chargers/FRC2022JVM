@@ -7,17 +7,16 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
-import frc.robot.Constants.intakeArmConstants;
-import frc.robot.commands.DoNothing;
-import frc.robot.commands.LowerIntake;
-import frc.robot.commands.ToggleShooter;
-import frc.robot.subsystems.*;
-import frc.robot.utils.*;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.Constants.intakeArmConstants;
+import frc.robot.commands.DoNothing;
+import frc.robot.commands.HoldClimber;
+import frc.robot.commands.LowerIntake;
+import frc.robot.commands.ToggleShooter;
+import frc.robot.subsystems.*;
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -33,6 +32,7 @@ public class RobotContainer {
     private final IntakeArm arm = new IntakeArm();
     private final Shooter shooter = new Shooter();
     private final Serializer serializer = new Serializer();
+    private final Climber climber = new Climber();
 
     XboxController driver_controller = new XboxController(0);
     XboxController operator_controller = new XboxController(1);
@@ -65,6 +65,7 @@ public class RobotContainer {
 
         serializer.setDefaultCommand(new InstantCommand(serializer::disable, serializer));
 
+        climber.setDefaultCommand(new HoldClimber(climber));
     }
 
     /**
@@ -89,6 +90,12 @@ public class RobotContainer {
         
         new JoystickButton(operator_controller, Button.kY.value)
             .whileHeld(new InstantCommand(serializer::enable, serializer));
+
+//        new JoystickButton(operator_controller, Button.kLeftStick.value) // TODO: Uncomment IF spinning the motor the reverse direction is necessary
+//            .whileHeld(new InstantCommand(climber::runBackwards, climber));
+
+        new JoystickButton(operator_controller, Button.kRightStick.value)
+            .whileHeld(new InstantCommand(climber::runForwards, climber));
     }
 
     /**
