@@ -13,11 +13,13 @@ public class Shooter extends SubsystemBase{
 
     private double power;
     private State state;
+    private boolean isEnabledBool;
 
     public Shooter(){
         shooterMotor = new CANSparkMax(shooterConstants.motorPort, MotorType.kBrushless);
         shooterMotor.setInverted(true);
         state = DISABLED;
+        isEnabledBool = false;
     }
 
     //This exists so that all subsystems have a commonly-named reset method
@@ -27,28 +29,36 @@ public class Shooter extends SubsystemBase{
 
     public void enable(){
         state = ENABLED;
+        isEnabledBool = true;
     }
     
     public void disable(){
         state = DISABLED;
+        isEnabledBool = false;
     }
 
     public boolean isEnabled(){
-        if (state == ENABLED) { return true; }
-        else { return false; }
+        return isEnabledBool;
     }
 
     @Override
     public void periodic(){
-        switch (state){
+        /**switch (state){
             case ENABLED:
                 power = shooterConstants.enablePower;
             case DISABLED:
                 power = 0;
+        }**/
+        if(isEnabledBool) {
+            shooterMotor.set(shooterConstants.enablePower);
+            //System.out.println("the shooter is ENABLED");
+        } else {
+            shooterMotor.set(0);
+            //System.out.println("the shooter is DISABLED");
         }
-        shooterMotor.set(power);
-    }
-    
+
+        //shooterMotor.set(power);
+    }   
     enum State {
         ENABLED(0),
         DISABLED(1);

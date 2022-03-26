@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.serializerConstants;
@@ -8,14 +10,15 @@ import frc.robot.Constants.serializerConstants;
 import static frc.robot.subsystems.Serializer.State.*;
 
 public class Serializer extends SubsystemBase {
-    private final WPI_TalonSRX serializerMotor1;
+    private final CANSparkMax serializerMotor1;
 
     private double power;
     private State state;
 
     public Serializer(){
-        serializerMotor1 = new WPI_TalonSRX(serializerConstants.motorPort1);
+        serializerMotor1 = new CANSparkMax(serializerConstants.motorPort1, MotorType.kBrushed);
         state = DISABLED;
+        power = 0;
     }
 
     //This exists so that all subsystems have a commonly-named reset method
@@ -40,17 +43,22 @@ public class Serializer extends SubsystemBase {
         else { return false; }
     }
 
+    public void setMotorRaw(double power){
+        this.power = power;
+    }
+
     @Override
     public void periodic(){
-        switch (state){
-            case FORWARD:
-                power = serializerConstants.enablePower;
-            case REVERSE:
-                power = -serializerConstants.enablePower;
-            case DISABLED:
-                power = 0;
-        }
+        // switch (state){
+        //     case FORWARD:
+        //         power = serializerConstants.enablePower;
+        //     case REVERSE:
+        //         power = -serializerConstants.enablePower;
+        //     case DISABLED:
+        //         power = 0;
+        // }
         serializerMotor1.set(power);
+        System.out.println("Running serializer at " + power);
     }
     
     enum State {

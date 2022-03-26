@@ -9,6 +9,7 @@ import frc.robot.pid.PIDConstants;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.revrobotics.CANSparkMax.IdleMode;
 
+import edu.wpi.first.wpilibj.XboxController.Axis;
 import edu.wpi.first.wpilibj.XboxController.Button;
 
 /**
@@ -31,6 +32,8 @@ public final class Constants {
 
         public static final int runSerializerForward = Button.kY.value;
         public static final int runSerializerReverse = Button.kLeftStick.value;
+
+        public static final int climberForward = Axis.kRightTrigger.value;
     }
 
     public static final class drivetrainConstants {
@@ -76,14 +79,14 @@ public final class Constants {
     public static final class intakeRollerConstants{
         public static final int motorPort = 5;
 
-        public static final double rollerPower = .95;
+        public static final double rollerPower = -.4;
         public static final ControlMode controlMode = ControlMode.PercentOutput;
     }
 
     public static final class intakeArmConstants{
         public static final int motor_port = 6;
-        public static final double max_power = .25;
-        public static final double min_power = -.15;
+        public static final double max_power = .1;
+        public static final double min_power = -.1;
             
         public static final double voltage_compensation=11;
         public static final int stall_current_limit=39;
@@ -97,7 +100,7 @@ public final class Constants {
 
         public static final double up_position = 0;
         public static final double down_position = -(21*Math.PI)/48;
-        public static final double maxSafePositionToDrop = 0.0;
+        public static final double maxSafePositionToDrop = -Math.PI/3;
 
         public static final double gear_ratio = (1/96.0);
     }
@@ -109,7 +112,7 @@ public final class Constants {
 
     public static final class serializerConstants{
         public static final int motorPort1 = 8;
-        public static final double enablePower = 0.25;
+        public static final double enablePower = -0.5;
     }
 
     public static final class climberConstants {

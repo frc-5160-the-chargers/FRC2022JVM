@@ -32,7 +32,7 @@ public class OI extends SubsystemBase{
         double x = driver_controller.getRightX();
         double y = driver_controller.getLeftY();
         return new double[]{
-            x,
+            -x,
             -y // Moving the controller to the left gives a negative number, but should represent a positive (clockwise) rotation
         };
     }
