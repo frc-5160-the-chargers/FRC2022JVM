@@ -89,7 +89,7 @@ public class Drivetrain extends SubsystemBase {
     public double getAngularPosition() {
         double[] positions = { encoderLeft.getPosition(), encoderRight.getPosition() };
         double rotations = Utils.average(positions);
-        double rotations_adjusted = rotations* Constants.drivetrainConstants.gear_ratio;
+        double rotations_adjusted = rotations * Constants.drivetrainConstants.gear_ratio;
         double radians = rotations_adjusted*2*Math.PI;
 
         return radians;

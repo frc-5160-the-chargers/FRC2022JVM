@@ -32,14 +32,14 @@ public class Drive extends CommandBase {
     /**
      * Drives the robot to a specific position.
      */
-    private static Drive toPosition(final double position, final Drivetrain drivetrain) {
+    public static Drive toPosition(final double position, final Drivetrain drivetrain) {
         return new Drive(position, drivetrain);
     }
 
     /**
      * Drives the robot a specified distance.
      */
-    private static Drive byDistance(final double distance, final Drivetrain drivetrain) {
+    public static Drive byDistance(final double distance, final Drivetrain drivetrain) {
         return new Drive(drivetrain.getPosition() + distance, drivetrain);
     }
 

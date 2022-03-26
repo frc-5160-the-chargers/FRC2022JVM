@@ -25,7 +25,7 @@ public final class Constants {
         public static final int outtake = Button.kA.value;
         public static final int intake = Button.kB.value;
 
-        public static final int lowerArm = Button.kLeftBumper.value;
+        public static final int lowerArm = Button.kLeftBumper.value; // TODO: maybe swap to right bumper
         public static final int raiseArm = Button.kRightBumper.value;
 
         public static final int toggleShooter = Button.kX.value;
