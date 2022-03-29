@@ -6,17 +6,12 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.XboxController.Button;
-import edu.wpi.first.wpilibj2.command.*;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.Constants.controlBindings;
-import frc.robot.Constants.intakeArmConstants;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.commands.DoNothing;
-//import frc.robot.commands.HoldClimber;
-import frc.robot.commands.Drive;
-import frc.robot.commands.LowerIntake;
-import frc.robot.commands.ToggleShooter;
-import frc.robot.subsystems.*;
+import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.OI;
+
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -25,17 +20,12 @@ import frc.robot.subsystems.*;
  */
 public class RobotContainer {
     // The robot's subsystems and commands are defined here...
-    private final NavX navx = new NavX();
+//    private final NavX navx = new NavX();
     private final OI oi = new OI();
     private final Drivetrain drivetrain = new Drivetrain();
-    private final IntakeRoller roller = new IntakeRoller();
-    private final IntakeArm arm = new IntakeArm();
-    private final Shooter shooter = new Shooter();
-    private final Serializer serializer = new Serializer();
-    //private final Climber climber = new Climber();
 
     XboxController driver_controller = new XboxController(0);
-    XboxController operator_controller = new XboxController(1);
+//    XboxController operator_controller = new XboxController(1);
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
@@ -50,18 +40,6 @@ public class RobotContainer {
                 drivetrain
             )
         );
-
-        roller.setDefaultCommand(
-            new RunCommand(roller::stop, roller)
-        );
-
-        arm.setDefaultCommand(new InstantCommand(arm::drop, arm));
-
-        shooter.setDefaultCommand(new InstantCommand(shooter::disable, shooter));
-
-        serializer.setDefaultCommand(new InstantCommand(serializer::disable, serializer));
-
-//        climber.setDefaultCommand(new HoldClimber(climber));
     }
 
     /**
@@ -71,30 +49,6 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        new JoystickButton(operator_controller, controlBindings.outtake)
-            .whileHeld(new InstantCommand(roller::outtake, roller));
-        new JoystickButton(operator_controller, controlBindings.intake)
-            .whileHeld(new InstantCommand(roller::intake, roller));
-
-        new JoystickButton(operator_controller, controlBindings.lowerArm)
-            .whenPressed(new InstantCommand(arm::drop, arm));
-
-        new JoystickButton(operator_controller, controlBindings.raiseArm)
-            .whenPressed(new InstantCommand(() -> arm.setTargetPosition(intakeArmConstants.down_position), arm));
-        
-        new JoystickButton(operator_controller, controlBindings.toggleShooter)
-            .whenPressed(new ToggleShooter(shooter));
-        
-        new JoystickButton(operator_controller, controlBindings.runSerializerForward)
-            .whileHeld(new InstantCommand(serializer::runForward, serializer));
-        new JoystickButton(operator_controller, controlBindings.runSerializerReverse)
-            .whileHeld(new InstantCommand(serializer::runReverse, serializer));
-
-//        new JoystickButton(operator_controller, XboxController.Axis.kLeftTrigger.value)
-//            .whileHeld(new InstantCommand(climber::runBackwards, climber));
-//
-//        new JoystickButton(operator_controller, XboxController.Axis.kRightTrigger.value)
-//            .whileHeld(new InstantCommand(climber::runForwards, climber));
 
 //        new JoystickButton(operator_controller, XboxController.Axis.kLeftTrigger.value) // TODO: Uncomment to use Variable Precision climbing
 //            .whileHeld(new VariablePrecisionClimber(VariablePrecisionClimber.Direction.BACKWARDS, climber));
@@ -109,12 +63,6 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        return new SequentialCommandGroup(
-            new ParallelCommandGroup(
-                new RunCommand(serializer::runForward, serializer),
-                new RunCommand(shooter::enable, shooter)
-            ).withTimeout(10.0),
-            Drive.byDistance(24, drivetrain)
-        );
+        return new DoNothing();
     }
 }
