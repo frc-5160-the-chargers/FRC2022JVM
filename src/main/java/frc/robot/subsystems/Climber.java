@@ -20,6 +20,10 @@ public class Climber extends SubsystemBase {
     private final RelativeEncoder encoder1 = climberMotor1.getEncoder();
     private final RelativeEncoder encoder2 = climberMotor2.getEncoder();
 
+    private double power;
+
+    private boolean hasBeenUsed = false;
+
     public Climber() {
 //        climberMotor1.setInverted(true); // TODO: Uncomment after testing if necessary
 //        climberMotor2.setInverted(true); // TODO: Uncomment after testing if necessary
@@ -28,6 +32,7 @@ public class Climber extends SubsystemBase {
         for (CANSparkMax sparkMax : sparkMaxes) {
             configureSpark(sparkMax);
         }
+        power = 0;
     }
 
     private void configureSpark(CANSparkMax motor) { // TODO: Uncomment any lines as necessary
@@ -54,6 +59,18 @@ public class Climber extends SubsystemBase {
         motors.stopMotor();
     }
 
+    public void setBeenUsed(boolean used){
+        hasBeenUsed = used;
+    }
+
+    public boolean getBeenUsed(){
+        return hasBeenUsed;
+    }
+
+    public void setPowerRaw(double power){
+        this.power = power;
+    }
+
     public double getAngularPosition() {
         double[] positions = { encoder1.getPosition(), encoder2.getPosition() };
         double rotations = Utils.average(positions);
@@ -67,6 +84,20 @@ public class Climber extends SubsystemBase {
         double rotations = getAngularPosition();
         double distance = rotations*(Constants.climberConstants.winchDiameter/2);
         return distance;
+    }
+
+    @Override
+    public void periodic(){
+        // switch (state){
+        //     case INTAKING:
+        //         intakeMotor.set(intakeRollerConstants.rollerPower);
+        //     case OUTTAKING:
+        //         intakeMotor.set(-intakeRollerConstants.rollerPower);
+        //     case STOPPED:
+        //         intakeMotor.stopMotor();
+        // }
+        climberMotor1.set(power);
+        climberMotor2.set(-power);
     }
 }
 

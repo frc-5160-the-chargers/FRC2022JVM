@@ -15,10 +15,13 @@ public class Serializer extends SubsystemBase {
     private double power;
     private State state;
 
+    private boolean isAuto;
+
     public Serializer(){
         serializerMotor1 = new CANSparkMax(serializerConstants.motorPort1, MotorType.kBrushed);
         state = DISABLED;
         power = 0;
+        isAuto = false;
     }
 
     //This exists so that all subsystems have a commonly-named reset method
@@ -43,8 +46,16 @@ public class Serializer extends SubsystemBase {
         else { return false; }
     }
 
-    public void setMotorRaw(double power){
+    public void setPowerRaw(double power){
         this.power = power;
+    }
+
+    public void setAuto(boolean auto){
+        isAuto = auto;
+    }
+
+    public boolean getAuto(){
+        return isAuto;
     }
 
     @Override

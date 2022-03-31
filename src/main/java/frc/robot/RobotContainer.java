@@ -10,11 +10,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.Constants.climberConstants;
 import frc.robot.Constants.controlBindings;
 import frc.robot.Constants.intakeArmConstants;
 import frc.robot.Constants.intakeRollerConstants;
 import frc.robot.Constants.serializerConstants;
-import frc.robot.commands.AutoShoot;
+import frc.robot.Constants.shooterConstants;
+import frc.robot.commands.AutoStuff;
 import frc.robot.commands.DoNothing;
 import frc.robot.commands.HoldClimber;
 import frc.robot.commands.ToggleShooter;
@@ -46,18 +48,28 @@ public class RobotContainer {
 
         drivetrain.setDefaultCommand(
             new RunCommand(
-                () -> drivetrain.curvatureDrive(
-                    oi.get_curvature_output()[1], oi.get_curvature_output()[0]
-                ),
+                () -> {
+                    if (!serializer.getAuto()){
+                        if (driver_controller.getRightBumper()){
+                            drivetrain.curvatureDrive(-oi.get_curvature_output()[1], oi.get_curvature_output()[0]);
+                        } else {
+                            drivetrain.curvatureDrive(oi.get_curvature_output()[1], oi.get_curvature_output()[0]);
+                        }
+                    }
+                },
                 drivetrain
             )
         );
 
+        shooter.setDefaultCommand(new RunCommand(() -> {if (!serializer.getAuto()){shooter.setPowerRaw(0);}}, shooter));
+
         roller.setDefaultCommand(new RunCommand(() -> {roller.setMotorRaw(0);}, roller));
 
-        serializer.setDefaultCommand(new RunCommand(() -> {serializer.setMotorRaw(0);}, serializer));
+        serializer.setDefaultCommand(new RunCommand(() -> {if (!serializer.getAuto()){serializer.setPowerRaw(0);}}, serializer));
 
-        climber.setDefaultCommand(new HoldClimber(climber));
+        climber.setDefaultCommand(new RunCommand(() -> {climber.setPowerRaw(
+            driver_controller.getRightTriggerAxis() - driver_controller.getLeftTriggerAxis()
+        );}, climber));
     }
 
     /**
@@ -79,12 +91,12 @@ public class RobotContainer {
         //     .whenPressed(new RunCommand(() -> arm.setTargetPosition(intakeArmConstants.up_position), arm));
         
         new JoystickButton(operator_controller, controlBindings.toggleShooter)
-            .whenPressed(new ToggleShooter(shooter));
+            .whileHeld(new RunCommand(()-> {serializer.setAuto(false); shooter.setPowerRaw(shooterConstants.enablePower);}, shooter));
         
         new JoystickButton(operator_controller, controlBindings.runSerializerForward)
-            .whileHeld(new RunCommand(() -> {serializer.setMotorRaw(serializerConstants.enablePower);}, serializer));
+            .whileHeld(new RunCommand(() -> {serializer.setAuto(false); serializer.setPowerRaw(serializerConstants.enablePower);}, serializer));
         new JoystickButton(operator_controller, controlBindings.runSerializerReverse)
-            .whileHeld(new RunCommand(() -> {serializer.setMotorRaw(-serializerConstants.enablePower);}, serializer));
+            .whileHeld(new RunCommand(() -> {serializer.setAuto(false); serializer.setPowerRaw(-serializerConstants.enablePower);}, serializer));
 
         // new JoystickButton(operator_controller, XboxController.Axis.kLeftTrigger.value)
         //     .whileHeld(new InstantCommand(climber::runBackwards, climber));
@@ -97,6 +109,13 @@ public class RobotContainer {
 
         // new JoystickButton(operator_controller, XboxController.Axis.kRightTrigger.value)
         //     .whileHeld(new VariablePrecisionClimber(VariablePrecisionClimber.Direction.FORWARDS, climber));
+
+        // new JoystickButton(driver_controller, XboxController.Button.kY.value)
+        //     .whileHeld(new RunCommand(() -> {climber.setPowerRaw(climberConstants.motorRunSpeed);}, climber));
+        
+        // new JoystickButton(driver_controller, XboxController.Button.kA.value)
+        //     .whileHeld(new RunCommand(() -> {climber.setPowerRaw(-climberConstants.motorRunSpeed);}, climber));
+
     }
 
     /**
@@ -105,6 +124,6 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        return new AutoShoot(shooter, serializer);
+        return new AutoStuff(shooter, serializer, drivetrain);
     }
 }

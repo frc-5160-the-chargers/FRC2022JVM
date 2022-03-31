@@ -13,9 +13,12 @@ public class HoldClimber extends CommandBase {
 
     private final SuperPIDController pidController;
 
+    private double startPosition;
+
     public HoldClimber(final Climber climber) {
         this.climber = climber;
         addRequirements(climber);
+        startPosition = 0;
 
         pidController = new SuperPIDController.Builder(
             holdPIDValues,
@@ -25,16 +28,19 @@ public class HoldClimber extends CommandBase {
             .feedForward((target, error) -> holdFeedForwardFactor)
             .build();
     }
-
-    @Override
-    public void initialize() {
-        final double startPosition = climber.getAngularPosition();
+    public void manualInitialize(double pos){
+        startPosition = climber.getAngularPosition();
         pidController.setTarget(startPosition);
     }
 
     @Override
+    public void initialize() {}
+
+    @Override
     public void execute() {
-        climber.run(pidController.calculateOutput());
+        if (!climber.getBeenUsed()){
+            climber.run(pidController.calculateOutput());
+        }
     }
 
     @Override

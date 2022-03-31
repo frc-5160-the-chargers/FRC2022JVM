@@ -79,7 +79,7 @@ public final class Constants {
     public static final class intakeRollerConstants{
         public static final int motorPort = 5;
 
-        public static final double rollerPower = -.4;
+        public static final double rollerPower = -.6;
         public static final ControlMode controlMode = ControlMode.PercentOutput;
     }
 
@@ -99,7 +99,7 @@ public final class Constants {
         public static final double tolerance = 0;
 
         public static final double up_position = 0;
-        public static final double down_position = -(21*Math.PI)/48;
+        public static final double down_position = -Math.PI/3;
         public static final double maxSafePositionToDrop = -Math.PI/3;
 
         public static final double gear_ratio = (1/96.0);
@@ -107,7 +107,7 @@ public final class Constants {
 
     public static final class shooterConstants{
         public static final int motorPort = 7;
-        public static final double enablePower = 0.95;
+        public static final double enablePower = 0.45;
     }
 
     public static final class serializerConstants{
@@ -124,7 +124,7 @@ public final class Constants {
         public static final double precisionAreaSizeInches = 8;
 
         // TODO: May need to tune any of the following
-        public static final double motorRunSpeed = 0.5;
+        public static final double motorRunSpeed = 0.6;
         public static final double precisionSpeed = 0.2;
         public static final PIDConstants holdPIDValues = new PIDConstants(0.5, 0.0, 0.01);
         public static final double maxMotorHoldPower = 0.75;

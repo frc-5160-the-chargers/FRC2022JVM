@@ -20,6 +20,7 @@ public class Shooter extends SubsystemBase{
         shooterMotor.setInverted(true);
         state = DISABLED;
         isEnabledBool = false;
+        power = 0;
     }
 
     //This exists so that all subsystems have a commonly-named reset method
@@ -41,6 +42,10 @@ public class Shooter extends SubsystemBase{
         return isEnabledBool;
     }
 
+    public void setPowerRaw(double power){
+        this.power = power;
+    }
+
     @Override
     public void periodic(){
         /**switch (state){
@@ -49,15 +54,15 @@ public class Shooter extends SubsystemBase{
             case DISABLED:
                 power = 0;
         }**/
-        if(isEnabledBool) {
-            shooterMotor.set(shooterConstants.enablePower);
-            //System.out.println("the shooter is ENABLED");
-        } else {
-            shooterMotor.set(0);
-            //System.out.println("the shooter is DISABLED");
-        }
+        // if(isEnabledBool) {
+        //     shooterMotor.set(shooterConstants.enablePower);
+        //     //System.out.println("the shooter is ENABLED");
+        // } else {
+        //     shooterMotor.set(0);
+        //     //System.out.println("the shooter is DISABLED");
+        // }
 
-        //shooterMotor.set(power);
+        shooterMotor.set(power);
     }   
     enum State {
         ENABLED(0),
