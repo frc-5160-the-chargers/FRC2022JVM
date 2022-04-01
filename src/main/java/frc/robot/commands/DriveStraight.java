@@ -2,8 +2,8 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.pid.SuperPIDController;
-import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.NavX;
+import frc.robot.hardware.subsystems.Drivetrain;
+import frc.robot.hardware.sensors.NavX;
 import frc.robot.utils.Range;
 
 import static frc.robot.Constants.drivetrainConstants.*;
@@ -20,7 +20,7 @@ public class DriveStraight extends CommandBase {
         this.power = power;
 
         this.drivetrain = drivetrain;
-        addRequirements(drivetrain, navX);
+        addRequirements(drivetrain);
 
         turnPidController = new SuperPIDController.Builder(
             turn_pid,

@@ -1,10 +1,10 @@
-package frc.robot.subsystems;
+package frc.robot.hardware.sensors;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.kauailabs.navx.frc.AHRS;
 
-public class NavX extends SubsystemBase {
+public class NavX {
     private final AHRS navx = new AHRS();
 
     public NavX(){

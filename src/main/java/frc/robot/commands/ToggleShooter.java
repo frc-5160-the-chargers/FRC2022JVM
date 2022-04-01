@@ -1,7 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Shooter;
+import frc.robot.hardware.subsystems.Shooter;
 
 public class ToggleShooter extends CommandBase{
     private final Shooter shooter;
@@ -12,11 +12,10 @@ public class ToggleShooter extends CommandBase{
     }
 
     @Override
-    public void execute() {
+    public void initialize() {
         if (shooter.isEnabled()){
             shooter.disable();
-        }
-        else {
+        } else {
             shooter.enable();
         }
     }

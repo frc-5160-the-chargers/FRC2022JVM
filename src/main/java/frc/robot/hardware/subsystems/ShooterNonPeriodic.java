@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.hardware.subsystems;
 
 
 import com.revrobotics.CANSparkMax;

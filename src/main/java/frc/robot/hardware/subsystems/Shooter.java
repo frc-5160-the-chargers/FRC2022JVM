@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.hardware.subsystems;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -6,7 +6,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.shooterConstants;
 
-import static frc.robot.subsystems.Shooter.State.*;
+import static frc.robot.hardware.subsystems.Shooter.State.*;
 
 public class Shooter extends SubsystemBase{
     private final CANSparkMax shooterMotor;

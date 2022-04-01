@@ -1,7 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Climber;
+import frc.robot.hardware.subsystems.Climber;
 
 import static frc.robot.Constants.climberConstants.*;
 import static java.lang.Math.abs;

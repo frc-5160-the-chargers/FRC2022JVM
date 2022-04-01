@@ -1,6 +1,7 @@
 plugins {
     id "java"
     id "edu.wpi.first.GradleRIO" version "2022.4.1"
+    id 'org.jetbrains.kotlin.jvm' version '1.6.20-RC'
 }
 
 sourceCompatibility = JavaVersion.VERSION_11
@@ -85,3 +86,18 @@ jar {
 deployArtifact.jarTask = jar
 wpi.java.configureExecutableTasks(jar)
 wpi.java.configureTestTasks(test)
+
+repositories {
+    mavenCentral()
+}
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+}

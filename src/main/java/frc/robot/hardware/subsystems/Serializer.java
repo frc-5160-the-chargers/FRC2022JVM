@@ -1,11 +1,11 @@
-package frc.robot.subsystems;
+package frc.robot.hardware.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.serializerConstants;
 
-import static frc.robot.subsystems.Serializer.State.*;
+import static frc.robot.hardware.subsystems.Serializer.State.*;
 
 public class Serializer extends SubsystemBase {
     private final WPI_TalonSRX serializerMotor1;
