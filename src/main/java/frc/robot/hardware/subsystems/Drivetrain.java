@@ -1,8 +1,9 @@
-package frc.robot.subsystems;
+package frc.robot.hardware.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -11,10 +12,10 @@ import frc.robot.Constants;
  * <p>See <a href="https://docs.wpilib.org/en/stable/docs/software/hardware-apis/motors/wpi-drive-classes.html#drive-modes">here</a> for an explanation of the various drive modes.</p>
  */
 public class Drivetrain extends SubsystemBase {
-    private final WPI_TalonSRX left1 = new WPI_TalonSRX(Constants.drivetrainConstants.motors_left[0]);
-    private final WPI_TalonSRX left2 = new WPI_TalonSRX(Constants.drivetrainConstants.motors_left[1]);
-    private final WPI_TalonSRX right1 = new WPI_TalonSRX(Constants.drivetrainConstants.motors_right[0]);
-    private final WPI_TalonSRX right2 = new WPI_TalonSRX(Constants.drivetrainConstants.motors_right[1]);
+    private final Spark left1 = new Spark(Constants.drivetrainConstants.motors_left[0]);
+    private final Spark left2 = new Spark(Constants.drivetrainConstants.motors_left[1]);
+    private final Spark right1 = new Spark(Constants.drivetrainConstants.motors_right[0]);
+    private final Spark right2 = new Spark(Constants.drivetrainConstants.motors_right[1]);
 
     private final MotorControllerGroup leftMotors = new MotorControllerGroup(left1, left2);
     private final MotorControllerGroup rightMotors = new MotorControllerGroup(right1, right2);
@@ -25,15 +26,15 @@ public class Drivetrain extends SubsystemBase {
 //    private final RelativeEncoder encoderRight = right1.getEncoder();
 
     public Drivetrain() {
-        WPI_TalonSRX[] motors = {left1, left2, right1, right2};
-        for (WPI_TalonSRX motor : motors) {
-            configureTalon(motor);
+        Spark[] motors = {left1, left2, right1, right2};
+        for (var motor : motors) {
+            configureSpark(motor);
         }
 
         rightMotors.setInverted(true);
     }
 
-    private void configureTalon(WPI_TalonSRX motor) {
+    private void configureSpark(Spark motor) {
 //        motor.enableVoltageCompensation(Constants.drivetrainConstants.voltage_compensation);
 //        motor.setSmartCurrentLimit(Constants.drivetrainConstants.stall_current_limit);
 //        motor.setIdleMode(Constants.drivetrainConstants.default_mode);

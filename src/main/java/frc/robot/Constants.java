@@ -34,8 +34,8 @@ public final class Constants {
     }
 
     public static final class drivetrainConstants {
-        public static final int[] motors_left = {1, 2};
-        public static final int[] motors_right = {3, 4};
+        public static final int[] motors_left = {6, 7};
+        public static final int[] motors_right = {8, 9};
         
         public static final double voltage_compensation=11;
         public static final int stall_current_limit=39;
@@ -126,5 +126,17 @@ public final class Constants {
         public static final PIDConstants holdPIDValues = new PIDConstants(0.5, 0.0, 0.01);
         public static final double maxMotorHoldPower = 0.75;
         public static final double holdFeedForwardFactor = 0.1; // This may have to be negative
+    }
+
+    public static final class limelightConstants {
+        public static final double mountingHeight = 0; // TODO: Set
+        public static final double mountingAngle = 0; // TODO: Set
+
+//        public static final double topGoalTapeHeightIn = 102.815;
+        public static final double topGoalTapeHeightIn = 24.0;
+
+        public static final int topGoalPipelineIndex = 0; // TODO: Set
+
+        public static final PIDConstants turnToTargetConstants = new PIDConstants(1.0, 0.0, 0.0);
     }
 }
