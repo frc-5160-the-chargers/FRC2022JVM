@@ -1,44 +1,50 @@
-// package frc.robot.commands;
+package frc.robot.commands;
 
-// import edu.wpi.first.wpilibj2.command.CommandBase;
-// import frc.robot.pid.SuperPIDController;
-// import frc.robot.subsystems.Climber;
-// import frc.robot.utils.Range;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.pid.SuperPIDController;
+import frc.robot.subsystems.Climber;
+import frc.robot.utils.Range;
 
-// import static frc.robot.Constants.climberConstants.*;
+import static frc.robot.Constants.climberConstants.*;
 
 
-// public class HoldClimber extends CommandBase {
-//     private final Climber climber;
+public class HoldClimber extends CommandBase {
+    private final Climber climber;
 
-//     private final SuperPIDController pidController;
+    private final SuperPIDController pidController;
 
-//     public HoldClimber(final Climber climber) {
-//         this.climber = climber;
-//         addRequirements(climber);
+    private double startPosition;
 
-//         pidController = new SuperPIDController.Builder(
-//             holdPIDValues,
-//             climber::getAngularPosition,
-//             new Range(-maxMotorHoldPower, maxMotorHoldPower)
-//         )
-//             .feedForward((target, error) -> holdFeedForwardFactor)
-//             .build();
-//     }
+    public HoldClimber(final Climber climber) {
+        this.climber = climber;
+        addRequirements(climber);
+        startPosition = 0;
 
-//     @Override
-//     public void initialize() {
-//         final double startPosition = climber.getAngularPosition();
-//         pidController.setTarget(startPosition);
-//     }
+        pidController = new SuperPIDController.Builder(
+            holdPIDValues,
+            climber::getAngularPosition,
+            new Range(-maxMotorHoldPower, maxMotorHoldPower)
+        )
+            .feedForward((target, error) -> holdFeedForwardFactor)
+            .build();
+    }
+    public void manualInitialize(double pos){
+        startPosition = climber.getAngularPosition();
+        pidController.setTarget(startPosition);
+    }
 
-//     @Override
-//     public void execute() {
-//         climber.run(pidController.calculateOutput());
-//     }
+    @Override
+    public void initialize() {}
 
-//     @Override
-//     public boolean isFinished() {
-//         return false;
-//     }
-// }
+    @Override
+    public void execute() {
+        if (!climber.getBeenUsed()){
+            climber.run(pidController.calculateOutput());
+        }
+    }
+
+    @Override
+    public boolean isFinished() {
+        return false;
+    }
+}

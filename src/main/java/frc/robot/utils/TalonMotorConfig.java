@@ -2,7 +2,6 @@ package frc.robot.utils;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.revrobotics.CANSparkMax;
 
 import java.util.Objects;
 

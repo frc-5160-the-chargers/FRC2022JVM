@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -13,6 +12,7 @@ public class IntakeRoller extends SubsystemBase {
     private final CANSparkMax intakeMotor = new CANSparkMax(intakeRollerConstants.motorPort, MotorType.kBrushed);
 
     public State state;
+    private double power = 0;
 
     public IntakeRoller(){
         reset();
@@ -34,16 +34,21 @@ public class IntakeRoller extends SubsystemBase {
         state = State.STOPPED;
     }
 
+    public void setMotorRaw(double power){
+        this.power = power;
+    }
+
     @Override
     public void periodic(){
-        switch (state){
-            case INTAKING:
-                intakeMotor.set(intakeRollerConstants.rollerPower);
-            case OUTTAKING:
-                intakeMotor.set(-intakeRollerConstants.rollerPower);
-            case STOPPED:
-                intakeMotor.stopMotor();
-        }
+        // switch (state){
+        //     case INTAKING:
+        //         intakeMotor.set(intakeRollerConstants.rollerPower);
+        //     case OUTTAKING:
+        //         intakeMotor.set(-intakeRollerConstants.rollerPower);
+        //     case STOPPED:
+        //         intakeMotor.stopMotor();
+        // }
+        intakeMotor.set(power);
     }
 
     enum State {

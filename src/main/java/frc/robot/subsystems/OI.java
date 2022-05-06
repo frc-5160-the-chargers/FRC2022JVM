@@ -33,7 +33,7 @@ public class OI extends SubsystemBase{
         double y = driver_controller.getLeftY();
         return new double[]{
             x,
-            -y // Moving the controller to the left gives a negative number, but should represent a positive (clockwise) rotation
+            y // Moving the controller to the left gives a negative number, but should represent a positive (clockwise) rotation
         };
     }
 
@@ -44,7 +44,7 @@ public class OI extends SubsystemBase{
         if (get_beast_mode()){
             y *= -1;
         }
-        return new double[]{x, y};
+        return new double[]{x*.5, y*.7};
     }
 
     public boolean get_beast_mode(){

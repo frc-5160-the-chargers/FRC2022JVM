@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -21,20 +22,24 @@ public class IntakeArm extends SubsystemBase {
     private final CANSparkMax armMotor;
     private final RelativeEncoder armEncoder;
 
-    private final SuperPIDController armPid = new SuperPIDController.Builder(
-        intakeArmConstants.pid_values,
-        this::getTargetPosition,
-        new Range(intakeArmConstants.min_power, intakeArmConstants.max_power)
-    )
-        .feedForward((target, error) -> 0.0)
-        .tolerance(intakeArmConstants.tolerance)
-        .build();
+    private final SuperPIDController armPid;
 
     private State state = State.OFF;
 
     public IntakeArm(){
         armMotor = new CANSparkMax(intakeArmConstants.motor_port, MotorType.kBrushless);
+        armMotor.setIdleMode(IdleMode.kCoast);
         armEncoder = armMotor.getEncoder();
+        armEncoder.setPosition(0);
+
+        armPid = new SuperPIDController.Builder(
+            intakeArmConstants.pid_values,
+            this::getTargetPosition,
+            new Range(intakeArmConstants.min_power, intakeArmConstants.max_power)
+        )
+        .feedForward((target, error) -> 0.0)
+        .tolerance(intakeArmConstants.tolerance)
+        .build();
     }
 
     /**
@@ -86,7 +91,7 @@ public class IntakeArm extends SubsystemBase {
     public void drop() {
         setTargetPosition(down_position);
         state = State.SAFE_DROPPING;
-        dropIfSafe(); // TODO: Fill this in depending on the arm design (will likely use PID to get into a safe area, then disable motors).
+        //dropIfSafe(); // TODO: Fill this in depending on the arm design (will likely use PID to get into a safe area, then disable motors).
     }
 
     private boolean isSafeToDrop() {
@@ -107,7 +112,6 @@ public class IntakeArm extends SubsystemBase {
                 }
                 break;
             case OFF:
-                armMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
                 armMotor.stopMotor();
                 break;
         }
